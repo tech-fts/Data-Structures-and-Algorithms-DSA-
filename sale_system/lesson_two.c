@@ -1,54 +1,45 @@
 #include <stdio.h>
 
-int check_type(const char *format, void *address){
+void check_type(const char *format, void *address, const char *err_msg){
     while(scanf(format, address) != 1){ //need to check 
-        printf("Invalid input. Please enter numbers only. \n");
+        printf("%s",err_msg);
 
         while(getchar() != '\n');
-        printf("Try again...");
+        printf("Try again... \n");
     }
 
     while(getchar() != '\n');
-    return 1;
 }
 
-char get_customerinfo(char *name, int *phone_number, char *shopname, char *address){
+void get_customerinfo(char *name, int *phone_number, char *shopname, char *address){
     printf("Enter your name: ");
-    scanf("%s", name);
-    while(getchar() != '\n');
+    check_type("%s", name, "Invalid Input. Enter correct name only. \n");
+    // while(getchar() != '\n');
     
     printf("Enter your phone number: ");
-    check_type("%d", phone_number);
+    check_type("%d", phone_number, "Invalid Input. Enter correct phone number only. \n");
 
     printf("Enter your shop name: ");
-    scanf("%s", shopname);
+    check_type("%s", shopname, "Invaild Input. Enter correct shop name only. \n");
+    // while(getchar() != '\n');
+
     printf("Enter your address: ");
-    scanf("%s", address);
-    return 0;
+    check_type("%s", address, "Invalid Input. Enter correct address only. \n");
+    // while(getchar() != '\n');
+
 }
 
-char get_saleitems(char *item_name, int *item_quantity, float *item_price){
+void get_saleitems(char *item_name, int *item_quantity, float *item_price){
     printf("Enter item name: ");
-    scanf("%s", item_name);
+    check_type("%s", item_name, "Invalid Input. Enter correct item name only. \n");
+    // while(getchar() != '\n');
+
     printf("Enter item quantity: ");
+    check_type("%d", item_quantity, "Invalid Input Enter correct item quantity only. \n");
 
-    //datatype check
-    while (scanf("%d", item_quantity) != 1){
-        printf("Invalid Input. Please enter number only. \n");
-        printf("Enter item quantity: ");
+    printf("Enter item price: \n");
+    check_type("%f", item_price, "Invalid Input. Enter correct item price only \n");
 
-        while(getchar() != '\n');
-    }
-    printf("Enter item price: ");
-
-    //datatype check
-    while (scanf("%f", item_price) != 1){
-        printf("Invalid Input. Please enter number only. \n");
-        printf("Enter item price: ");
-
-        while(getchar() != '\n');
-    }
-    return 0;
 }
 
 int mainaction(){
@@ -56,7 +47,7 @@ int mainaction(){
 
     printf("Welcome to Our Sale System\n");
     printf("add customerinfo\n");
-    scanf("%d", &action);
+    check_type("%d", &action, "Invalid Input. Enter correct option. \n");
 
     while (action != 1){
         return 0;
@@ -69,7 +60,7 @@ int mainaction(){
 int saleaction(){
     int sal_action = 0;
     printf("1. Add Sale Items\n");
-    scanf("%d", &sal_action);
+    check_type("%d", &sal_action, "Invalid Input. Enter correct option. \n");
     if (sal_action != 1){
         return 0;
     }
@@ -117,6 +108,7 @@ int main(){
         printf("Item Quantity: %d\n", item_quantity);
         printf("Item Price: %.2f\n", item_price);
         printf("Name: %s\n", name);
+        printf("\n");
     }
 
     return 0;
