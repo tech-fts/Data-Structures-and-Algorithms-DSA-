@@ -10,9 +10,7 @@ void check_type(const char *format, void *address){
 }
 
 int main(){
-    int a,b,c;
-
-    int D1, x;
+    double a,b,c;
 
     printf("Enter a number for a: \n");
     check_type("%d", &a);
@@ -23,20 +21,29 @@ int main(){
     printf("Enter a number for c: \n");
     check_type("%d", &c);
 
-    D1 = (b*b) - (4*a*c);
-    printf("%d", D1);
+    double D1 = (b*b) - (4*a*c);
+    printf("%d\n", D1);
 
-    if(D1 >= 0){
-        double root = sqrt(D1);
-        printf("Square root of discriminant: %lf\n", root);
-    }else{
-        printf("Discriminant is negative (complex roots).\n");
+    if (D1 > 0) {
+        double ans1 = (-b + sqrt(D1)) / (2.0 * a);
+        double ans2 = (-b - sqrt(D1)) / (2.0 * a);
+        
+        printf("Two real roots:\n");
+        printf("x1 = %.2f\n", ans1);
+        printf("x2 = %.2f\n", ans2);
     }
-
-    int ans1 = -b - sqrt(D1);
-    int ans2 = -b + sqrt(D1);
-
-    printf("%d", ans1, ans2);
+    else if (D1 == 0) {
+        double ans = -b / (2.0 * a);
+        printf("One real (repeated) root:\n");
+        printf("x = %.2f\n", ans);
+    }else{
+        double realPart = -b / (2.0 * a);
+        double imagPart = sqrt(-D1) / (2.0 * a);
+        
+        printf("Complex roots:\n");
+        printf("x1 = %.2f + %.2fi\n", realPart, imagPart);
+        printf("x2 = %.2f - %.2fi\n", realPart, imagPart);
+    }
 
     return 0;
 }
