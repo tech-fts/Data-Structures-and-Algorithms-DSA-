@@ -80,6 +80,18 @@ int create_contact(struct personInfo personlist[], int arrsize){
     return arrsize; // Return updated total count back to main
 }
 
+void view_contact(struct personInfo personList[], int length){
+    
+    for (int i = 0; i < length; i++) {
+        printf("ID: %d | Name: %s | Phone: %s | Email: %s | Address: %s\n", 
+            personList[i].contactId, 
+            personList[i].name, 
+            personList[i].phone_number,
+            personList[i].email,
+            personList[i].address);
+    }
+}
+
 int main(){
     struct personInfo p1;
     struct personInfo personlist[MaxSize]; // Array initialized with size MaxSize
@@ -91,6 +103,9 @@ int main(){
         int option = choose_option();
         if( option == 1){
             create_contact(personlist, arrsize);
+        }else if(option == 4){
+            int length = sizeof(personlist)/sizeof(personlist[0]);
+            view_contact(personlist, length);
         }else if(option == 5){
             printf("\nExiting program... Goodbye!\n");
             break; // Breaks out of the while loop to terminate main()
