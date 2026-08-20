@@ -83,7 +83,7 @@ int create_contact(struct personInfo personlist[], int arrsize){
 void view_contact(struct personInfo personList[], int length){
     if (length == 0)
     {
-        printf("\nNo contacts available to update.\n");
+        printf("\nNo contacts available to view.\n");
         return;
     }
     
@@ -152,30 +152,42 @@ void update_contact(struct personInfo personList[], int length) {
     }
 }
 
-void delete_contact(struct personInfo personList[], int length){
+int delete_contact(struct personInfo personList[], int length){
     if (length == 0) {
-        printf("\nNo contacts available to update.\n");
-        return;
+        printf("\nNo contacts available to delete.\n");
+        return length;
     }
 
-    for (int i = 0; i < length; i++) {
-        printf("ID: %d | Name: %s | Phone: %s | Email: %s | Address: %s\n", 
-            personList[i].contactId, 
-            personList[i].name, 
-            personList[i].phone_number,
-            personList[i].email,
-            personList[i].address);
-    }
+    view_contact(personList, length);
 
     int deleteId;
     printf("\nEnter ID that you want to delete: ");
     if (scanf("%d", &deleteId) != 1) {
         printf("Invalid input.\n");
-        while (getchar() != '\n'); // Clear buffer
-        return;
+        while (getchar() != '\n'); 
+        return length; // FIX: Return current array size on error
     }
 
+    int found = 0;
+    for (int i = 0; i < length; i++) {
+        if (personList[i].contactId == deleteId) {
+            found = 1;
 
+            for (int j = i; j < length - 1; j++) {
+                personList[j] = personList[j + 1];
+            }
+
+            length--; 
+            printf("\n--> Contact ID %d deleted successfully!\n", deleteId);
+            break; 
+        }
+    }
+
+    if (!found) {
+        printf("\nContact with ID %d not found.\n", deleteId);
+    }
+
+    return length; // Returns updated array size back to main
 }
 
 int main(){
@@ -191,6 +203,8 @@ int main(){
             arrsize = create_contact(personlist, arrsize);
         }else if(option == 2){
             update_contact(personlist, arrsize);
+        }else if(option == 3){
+            arrsize = delete_contact(personlist, arrsize);
         }else if(option == 4){
             view_contact(personlist, arrsize);
         }else if(option == 5){
