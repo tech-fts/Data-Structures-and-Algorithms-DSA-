@@ -102,10 +102,9 @@ int main(){
         printf("Contact List\n", choose_option);
         int option = choose_option();
         if( option == 1){
-            create_contact(personlist, arrsize);
+            arrsize = create_contact(personlist, arrsize);
         }else if(option == 4){
-            int length = sizeof(personlist)/sizeof(personlist[0]);
-            view_contact(personlist, length);
+            view_contact(personlist, arrsize);
         }else if(option == 5){
             printf("\nExiting program... Goodbye!\n");
             break; // Breaks out of the while loop to terminate main()
