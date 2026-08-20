@@ -81,6 +81,11 @@ int create_contact(struct personInfo personlist[], int arrsize){
 }
 
 void view_contact(struct personInfo personList[], int length){
+    if (length == 0)
+    {
+        printf("\nNo contacts available to update.\n");
+        return;
+    }
     
     for (int i = 0; i < length; i++) {
         printf("ID: %d | Name: %s | Phone: %s | Email: %s | Address: %s\n", 
@@ -90,6 +95,87 @@ void view_contact(struct personInfo personList[], int length){
             personList[i].email,
             personList[i].address);
     }
+}
+
+void update_contact(struct personInfo personList[], int length) {
+    if (length == 0) {
+        printf("\nNo contacts available to update.\n");
+        return;
+    }
+
+    int updateId;
+    printf("\nEnter ID that you want to update: ");
+    if (scanf("%d", &updateId) != 1) {
+        printf("Invalid input.\n");
+        while (getchar() != '\n'); // Clear buffer
+        return;
+    }
+
+    int found = 0;
+    for (int i = 0; i < length; i++) {
+        if (personList[i].contactId == updateId) {
+            found = 1;
+            int choice;
+
+            printf("\nUpdating Contact ID #%d (%s)\n", updateId, personList[i].name);
+            printf("1. Update Name\n");
+            printf("2. Update Phone Number\n");
+            printf("3. Update Email\n");
+            printf("4. Update Address\n");
+            printf("Enter field to edit (1-4): ");
+            scanf("%d", &choice);
+
+            if (choice == 1) {
+                printf("Enter new name: ");
+                scanf("%s", personList[i].name);
+            } else if (choice == 2) {
+                printf("Enter new phone number: ");
+                scanf("%s", personList[i].phone_number);
+            } else if (choice == 3) {
+                printf("Enter new email: ");
+                scanf("%s", personList[i].email);
+            } else if (choice == 4) {
+                printf("Enter new address: ");
+                scanf("%s", personList[i].address);
+            } else {
+                printf("Invalid field option.\n");
+                return;
+            }
+
+            printf("--> Contact updated successfully!\n");
+            break; // Stop loop once match is found
+        }
+    }
+
+    if (!found) {
+        printf("\nContact with ID %d not found.\n", updateId);
+    }
+}
+
+void delete_contact(struct personInfo personList[], int length){
+    if (length == 0) {
+        printf("\nNo contacts available to update.\n");
+        return;
+    }
+
+    for (int i = 0; i < length; i++) {
+        printf("ID: %d | Name: %s | Phone: %s | Email: %s | Address: %s\n", 
+            personList[i].contactId, 
+            personList[i].name, 
+            personList[i].phone_number,
+            personList[i].email,
+            personList[i].address);
+    }
+
+    int deleteId;
+    printf("\nEnter ID that you want to delete: ");
+    if (scanf("%d", &deleteId) != 1) {
+        printf("Invalid input.\n");
+        while (getchar() != '\n'); // Clear buffer
+        return;
+    }
+
+
 }
 
 int main(){
@@ -103,6 +189,8 @@ int main(){
         int option = choose_option();
         if( option == 1){
             arrsize = create_contact(personlist, arrsize);
+        }else if(option == 2){
+            update_contact(personlist, arrsize);
         }else if(option == 4){
             view_contact(personlist, arrsize);
         }else if(option == 5){
@@ -110,7 +198,6 @@ int main(){
             break; // Breaks out of the while loop to terminate main()
         }
     }
-    
     
     return 0;
 }
