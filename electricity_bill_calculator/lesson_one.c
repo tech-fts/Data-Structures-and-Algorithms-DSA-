@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 struct Person
 {
@@ -31,6 +33,36 @@ int login(struct Person users[], const char userName[], const char password[]) {
     return -1; // Authentication failed
 }
 
+int user_dashboard(){
+    
+}
+
+void user_meter(void) {
+    struct Meter m1;
+    m1.units_consumed = 120.3;
+    int choice = 0;
+
+    printf("Meter started!\n");
+
+    while (1) {
+        // \r brings cursor back to start of line, spaces clear leftover text
+        printf("\rCurrent Usage: %.2f kW  ", m1.units_consumed);
+        fflush(stdout); // Force screen to update immediately
+
+        m1.units_consumed++;
+        sleep(1);
+
+        // Simple exit menu (Type 1 and press Enter to exit, 0 to continue)
+        printf("\nPress 1 to Exit (or 0 to keep running): ");
+        scanf("%d", &choice);
+
+        if (choice == 1) {
+            printf("Exiting meter...\n");
+            break;
+        }
+    }
+}
+
 int main(){
     struct Person p1;
 
@@ -60,6 +92,7 @@ int main(){
             printf("\n--- USER DASHBOARD ---\n");
             printf("Account Type: %s | Location: %s\n", users[userIndex].useType, users[userIndex].Location);
             // Prompt for meter readings and compute bill here
+            user_meter();
         }
 
     } else {
