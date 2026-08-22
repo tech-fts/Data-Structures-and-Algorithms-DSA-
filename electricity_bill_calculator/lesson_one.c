@@ -33,11 +33,18 @@ int login(struct Person users[], const char userName[], const char password[]) {
     return -1; // Authentication failed
 }
 
-int user_dashboard(){
-    
+int user_dashboard(struct Person users[], const int userIndex){
+    printf("\n--- USER DASHBOARD ---\n");
+    printf("Account Type: %s | Location: %s\n", users[userIndex].useType, users[userIndex].Location);
+    int useropt = 0;
+    printf("0. exit to enter: ");
+    printf("\n1. meter usage: ");
+    scanf("%d", &useropt);
+
+    return useropt;
 }
 
-void user_meter(void) {
+void user_meter(struct Person users[], const int userIndex) {
     struct Meter m1;
     m1.units_consumed = 120.3;
     int choice = 0;
@@ -58,6 +65,7 @@ void user_meter(void) {
 
         if (choice == 1) {
             printf("Exiting meter...\n");
+            user_dashboard(users, userIndex);
             break;
         }
     }
@@ -89,10 +97,11 @@ int main(){
             printf("\n--- ADMIN DASHBOARD ---\n");
             // Perform admin tasks (e.g., view all user accounts)
         } else {
-            printf("\n--- USER DASHBOARD ---\n");
-            printf("Account Type: %s | Location: %s\n", users[userIndex].useType, users[userIndex].Location);
+            int option = user_dashboard(users, userIndex);
             // Prompt for meter readings and compute bill here
-            user_meter();
+            if (option == 1){
+                user_meter(users, userIndex);
+            }
         }
 
     } else {
