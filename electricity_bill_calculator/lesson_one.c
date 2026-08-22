@@ -10,6 +10,7 @@ struct Person {
     char userRole[50];
     char useType[50];
     char Location[100];
+    float total_usage;
 };
 
 struct Meter {
@@ -36,21 +37,115 @@ int user_dashboard(struct Person users[], const int userIndex) {
     printf("0. Exit program\n");
     printf("1. Meter usage\n");
     printf("2. Meter usage calculation\n");
+    printf("3. Meter payment\n");
     printf("Enter option: ");
     scanf("%d", &useropt);
 
     return useropt;
 }
 
-void meter_usageCalculation(struct Meter m) {
+struct Person meter_usageCalculation(struct Meter m, struct Person p) {
     printf("\n--- METER USAGE CALCULATION ---\n");
     float ratePerUnit = 5.50f;
-    float total_usage = m.units_consumed * ratePerUnit;
+    p.total_usage = m.units_consumed * ratePerUnit;
 
     printf("Previous Reading : %.2f\n", m.preReading);
     printf("Current Reading  : %.2f\n", m.currentReading);
     printf("Units Consumed   : %.2f kW\n", m.units_consumed);
-    printf("Total Cost       : $%.2f\n", total_usage);
+    printf("Total Cost       : $%.2f\n", p.total_usage);
+
+    return p;
+}
+
+// Return float instead of int
+float cash_payment() {
+    int status = 0;
+    float amount = 0.0f;
+
+    while (1) {
+        printf("Enter amount to pay: ");
+        status = scanf("%f", &amount);
+
+        if (status == EOF) {
+            printf("Error: no input detected.\n");
+            return -1.0f;
+        }
+
+        if (status == 0) {
+            printf("Invalid input! Please enter numbers only.\n");
+            int ch;
+            while ((ch = getchar()) != '\n' && ch != EOF);
+            continue;
+        }
+
+        if (amount <= 0.0f) {
+            printf("Payment amount must be greater than 0.\n");
+            continue;
+        }
+
+        break;
+    }
+
+    return amount; // Return the entered amount
+}
+
+// Return float instead of int
+float mobile_payment() {
+    int status = 0;
+    float amount = 0.0f;
+
+    while (1) {
+        printf("Enter amount to pay: ");
+        status = scanf("%f", &amount);
+
+        if (status == EOF) {
+            printf("Error: no input detected.\n");
+            return -1.0f;
+        }
+
+        if (status == 0) {
+            printf("Invalid input! Please enter numbers only.\n");
+            int ch;
+            while ((ch = getchar()) != '\n' && ch != EOF);
+            continue;
+        }
+
+        if (amount <= 0.0f) {
+            printf("Payment amount must be greater than 0.\n");
+            continue;
+        }
+
+        break;
+    }
+
+    return amount; // Return the entered amount
+}
+
+float make_payment(struct Person p) {
+    printf("Your meter usage cost is: $%.2f\n", p.total_usage);
+
+    int method = 0; 
+    float amount = 0.0f;
+
+    printf("Enter payment methods: \n");
+    printf("1. cash\n");
+    printf("2. Mobile Pay\n");
+
+    scanf("%d", &method);
+
+    if (method == 1) {
+        // Capture the returned value
+        amount = cash_payment();
+        printf("Payment of $%.2f accepted!\n", amount);
+        return amount;
+    } else if (method == 2) {
+        // Capture the returned value
+        amount = mobile_payment();
+        printf("Your Mobile Payment of $%.2f accepted!\n", amount);
+        return amount;
+    }
+
+    return 0.0f;
 }
 
 struct Meter user_meter(struct Person users[], const int userIndex) {
@@ -119,8 +214,11 @@ int main() {
                     m = user_meter(users, userIndex); 
                 } else if (option == 2) {
                     // Pass saved values from 'm' to calculation
-                    meter_usageCalculation(m); 
-                } else if (option == 0) {
+                    p1 = meter_usageCalculation(m, p1); 
+                }else if(option == 3){
+                    make_payment(p1);
+                } 
+                else if (option == 0) {
                     printf("Exiting application...\n");
                     running = 0; // Exit dashboard loop
                 } else {
