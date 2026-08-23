@@ -11,9 +11,11 @@ struct Person {
     char useType[50];
     char Location[100];
     float total_usage;
+    int meterId;
 };
 
 struct Meter {
+    int meterId;
     float preReading;
     float currentReading;
     float units_consumed;
@@ -189,6 +191,12 @@ int main() {
         {101, "admin", "admin123", "admin", "Work", "Urban"},
         {102, "john_doe", "pass456", "user", "House", "Rural"},
     };
+
+    struct Meter meters[2] = {
+        {00001,0.0f, 0.0f, 0.0f},
+        {00002,0.0f, 0.0f, 0.0f}
+    };
+    
 
     printf("**********Electricity Bill Calculator**********\n");
     printf("*****Login*****\n");
