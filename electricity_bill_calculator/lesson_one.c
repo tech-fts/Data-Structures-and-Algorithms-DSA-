@@ -45,7 +45,12 @@ int user_dashboard(struct Person users[], const int userIndex) {
 
     return useropt;
 }
+ 
+int admin_dashboard(struct Person users[], const int userIndex){
+    printf("\n--- USER DASHBOARD ---\n");
+    printf("Account Type: %s | Location: %s\n", users[userIndex].userRole, users[userIndex].Location);
 
+}
 struct Person meter_usageCalculation(struct Meter m, struct Person p) {
     printf("\n--- METER USAGE CALCULATION ---\n");
     float ratePerUnit = 5.50f;
@@ -150,21 +155,29 @@ float make_payment(struct Person p) {
     return 0.0f;
 }
 
-struct Meter user_meter(struct Person users[], const int userIndex) {
-    struct Meter m1;
-    
-    m1.preReading = 120.3f;
-    m1.currentReading = m1.preReading;
-    m1.units_consumed = 0.0f;
+struct Meter user_meter(struct Person users[], const int userIndex, struct Meter meters[]) {
+
+    int userMeter, meterid = 0;
+    for(int i = 0; i < 2; i++){
+        if (meters->meterId == users[userIndex].meterId){
+            userMeter = 1;
+            printf("%d", i);
+            meterid = i;
+        }
+    }
+
+    meters[meterid].preReading = 120.3f;
+    meters[meterid].currentReading = meters[meterid].preReading;
+    meters[meterid].units_consumed = 0.0f;
     
     int choice = 0;
     printf("\nMeter started!\n");
 
     while (1) {
-        m1.currentReading += 1.0f;
-        m1.units_consumed = m1.currentReading - m1.preReading;
+        meters[meterid].currentReading += 1.0f;
+        meters[meterid].units_consumed = meters[meterid].currentReading - meters[meterid].preReading;
 
-        printf("\rCurrent Reading: %.2f | Consumed: %.2f kW  ", m1.currentReading, m1.units_consumed);
+        printf("\rCurrent Reading: %.2f | Consumed: %.2f kW  ", meters[meterid].currentReading, meters[meterid].units_consumed);
         fflush(stdout);
 
         sleep(1);
@@ -179,7 +192,7 @@ struct Meter user_meter(struct Person users[], const int userIndex) {
         }
     }
 
-    return m1; 
+    return meters[meterid]; 
 }
 
 int main() {
@@ -189,7 +202,7 @@ int main() {
 
     struct Person users[2] = {
         {101, "admin", "admin123", "admin", "Work", "Urban"},
-        {102, "john_doe", "pass456", "user", "House", "Rural"},
+        {102, "john_doe", "pass456", "user", "House", "Rural", 0, 00001},
     };
 
     struct Meter meters[2] = {
@@ -210,6 +223,17 @@ int main() {
     if (userIndex != -1) {
         if (strcmp(users[userIndex].userRole, "admin") == 0) {
             printf("\n--- ADMIN DASHBOARD ---\n");
+
+            int admintime = 1;
+
+            while(admintime){
+                int adoption = admin_dashboard(users, userIndex);
+
+                if (adoption == 1){
+                    printf("this is true");
+                }
+            }
+            
         } else {
             int running = 1;
 
@@ -219,7 +243,7 @@ int main() {
 
                 if (option == 1) {
                     // Save updated readings to 'm' declared in main
-                    m = user_meter(users, userIndex); 
+                    m = user_meter(users, userIndex, meters); 
                 } else if (option == 2) {
                     // Pass saved values from 'm' to calculation
                     p1 = meter_usageCalculation(m, p1); 
