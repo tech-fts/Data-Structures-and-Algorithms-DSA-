@@ -12,6 +12,7 @@ struct Person {
     char Location[100];
     float total_usage;
     int meterId;
+    float amount;
 };
 
 struct Meter {
@@ -50,6 +51,22 @@ int admin_dashboard(struct Person users[], const int userIndex){
     printf("\n--- USER DASHBOARD ---\n");
     printf("Account Type: %s | Location: %s\n", users[userIndex].userRole, users[userIndex].Location);
 
+    int adopt = 0;
+    printf("1. users lists\n");
+    printf("0. Exit program\n");
+    scanf("%d", &adopt);
+
+    return adopt;
+}
+
+void users_list(struct Person users[]){
+
+    printf("**********Users List**********\n");
+    for(int i; i<2; i++){
+        if(strcmp(users[i].userRole,"admin") != 0){
+            printf("Users name: %s | MeterType: %s | Location: %s\n | paid: $%.2f\n", users[i].userName, users[i].useType, users[i].Location, users[i].amount);
+        }
+    }
 }
 struct Person meter_usageCalculation(struct Meter m, struct Person p) {
     printf("\n--- METER USAGE CALCULATION ---\n");
@@ -128,31 +145,27 @@ float mobile_payment() {
     return amount; // Return the entered amount
 }
 
-float make_payment(struct Person p) {
+struct Person make_payment(struct Person p) {
     printf("Your meter usage cost is: $%.2f\n", p.total_usage);
 
     int method = 0; 
-    float amount = 0.0f;
+    p.amount = 0.0f;
 
     printf("Enter payment methods: \n");
-    printf("1. cash\n");
+    printf("1. Cash\n");
     printf("2. Mobile Pay\n");
 
     scanf("%d", &method);
 
     if (method == 1) {
-        // Capture the returned value
-        amount = cash_payment();
-        printf("Payment of $%.2f accepted!\n", amount);
-        return amount;
+        p.amount = cash_payment();
+        printf("Payment of $%.2f accepted!\n", p.amount);
     } else if (method == 2) {
-        // Capture the returned value
-        amount = mobile_payment();
-        printf("Your Mobile Payment of $%.2f accepted!\n", amount);
-        return amount;
+        p.amount = mobile_payment();
+        printf("Your Mobile Payment of $%.2f accepted!\n", p.amount);
     }
 
-    return 0.0f;
+    return p; // Return modified struct back
 }
 
 struct Meter user_meter(struct Person users[], const int userIndex, struct Meter meters[]) {
@@ -226,11 +239,17 @@ int main() {
 
             int admintime = 1;
 
-            while(admintime){
+            while (admintime) {
                 int adoption = admin_dashboard(users, userIndex);
 
-                if (adoption == 1){
-                    printf("this is true");
+                if (adoption == 1) {
+                    printf("\nAdmin Action Executed Successfully!\n");
+                    users_list(users);
+                } else if (adoption == 0) {
+                    printf("Exiting admin dashboard...\n");
+                    admintime = 0;
+                } else {
+                    printf("Invalid Option. Try again.\n");
                 }
             }
             
@@ -248,7 +267,8 @@ int main() {
                     // Pass saved values from 'm' to calculation
                     p1 = meter_usageCalculation(m, p1); 
                 }else if(option == 3){
-                    make_payment(p1);
+                    p1 = make_payment(p1);
+                    users[userIndex].amount = p1.amount; // Save to the global array
                 } 
                 else if (option == 0) {
                     printf("Exiting application...\n");
