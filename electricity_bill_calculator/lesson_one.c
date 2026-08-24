@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <unistd.h>
 
+//declare person and meter
 struct Person {
     int accountId;
     char userName[50];
@@ -24,6 +25,7 @@ struct Meter {
     float units_consumed;
 };
 
+//user login
 int login(struct Person users[], const char userName[], const char password[]) {
     for (int i = 0; i < 2; i++) {
         if (strcmp(users[i].userName, userName) == 0 && strcmp(users[i].password, password) == 0) {
@@ -34,21 +36,8 @@ int login(struct Person users[], const char userName[], const char password[]) {
     printf("Invalid username or password!\n");
     return -1;
 }
-
-int user_dashboard(struct Person users[], const int userIndex) {
-    printf("\n--- USER DASHBOARD ---\n");
-    printf("Account Type: %s | Location: %s\n", users[userIndex].useType, users[userIndex].Location);
-    int useropt = 0;
-    printf("0. Exit program\n");
-    printf("1. Meter usage\n");
-    printf("2. Meter usage calculation\n");
-    printf("3. Meter payment\n");
-    printf("Enter option: ");
-    scanf("%d", &useropt);
-
-    return useropt;
-}
  
+//Admin side
 int admin_dashboard(struct Person users[], const int userIndex){
     printf("\n--- USER DASHBOARD ---\n");
     printf("Account Type: %s | Location: %s\n", users[userIndex].userRole, users[userIndex].Location);
@@ -85,6 +74,21 @@ void users_list(struct Person users[]){
     }
 }
 
+// User side
+int user_dashboard(struct Person users[], const int userIndex) {
+    printf("\n--- USER DASHBOARD ---\n");
+    printf("Account Type: %s | Location: %s\n", users[userIndex].useType, users[userIndex].Location);
+    int useropt = 0;
+    printf("0. Exit program\n");
+    printf("1. Meter usage\n");
+    printf("2. Meter usage calculation\n");
+    printf("3. Meter payment\n");
+    printf("Enter option: ");
+    scanf("%d", &useropt);
+
+    return useropt;
+}
+
 struct Person meter_usageCalculation(struct Meter m, struct Person users[], const int index) {
     printf("\n--- METER USAGE CALCULATION ---\n");
     float ratePerUnit = 5.50f;
@@ -98,7 +102,7 @@ struct Person meter_usageCalculation(struct Meter m, struct Person users[], cons
     return users[index];
 }
 
-// Return float instead of int
+// Return float instead of int. payment
 float cash_payment() {
     int status = 0;
     float amount = 0.0f;
