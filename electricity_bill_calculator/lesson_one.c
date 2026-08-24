@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <unistd.h>
 
 struct Person {
@@ -13,6 +14,7 @@ struct Person {
     float total_usage;
     int meterId;
     float amount;
+    bool payment;
 };
 
 struct Meter {
@@ -53,10 +55,24 @@ int admin_dashboard(struct Person users[], const int userIndex){
 
     int adopt = 0;
     printf("1. users lists\n");
+    printf("2. payment List from all users\n");
     printf("0. Exit program\n");
     scanf("%d", &adopt);
 
     return adopt;
+}
+
+void payment_list(struct Person users[]){
+    printf("**********Payment List**********",users[1].accountId);
+    for (int i =0; i < 2; i++){
+        if (strcmp(users[i].userRole, "admin") != 0) {
+            printf("\nAccount ID: %d | User: %s | Total Paid: $%.2f | Status: %s\n", 
+                    users[i].accountId, 
+                    users[i].userName, 
+                    users[i].amount, 
+                    users[i].payment ? "Paid" : "Unpaid");
+        }
+    }
 }
 
 void users_list(struct Person users[]){
@@ -68,6 +84,7 @@ void users_list(struct Person users[]){
         }
     }
 }
+
 struct Person meter_usageCalculation(struct Meter m, struct Person p) {
     printf("\n--- METER USAGE CALCULATION ---\n");
     float ratePerUnit = 5.50f;
@@ -145,11 +162,12 @@ float mobile_payment() {
     return amount; // Return the entered amount
 }
 
-struct Person make_payment(struct Person p) {
+struct Person make_payment(struct Person p, struct Person users[]) {
     printf("Your meter usage cost is: $%.2f\n", p.total_usage);
 
     int method = 0; 
     p.amount = 0.0f;
+    p.payment = false;
 
     printf("Enter payment methods: \n");
     printf("1. Cash\n");
@@ -160,9 +178,17 @@ struct Person make_payment(struct Person p) {
     if (method == 1) {
         p.amount = cash_payment();
         printf("Payment of $%.2f accepted!\n", p.amount);
+        if(p.amount != EOF){
+            p.payment = true;
+        }
+        printf("Your Cash Payment status is: %s\n", p.payment ? "Paid" : "Unpaid");
     } else if (method == 2) {
         p.amount = mobile_payment();
         printf("Your Mobile Payment of $%.2f accepted!\n", p.amount);
+        if(p.amount == EOF){
+            p.payment = true;
+        }
+        printf("Your Mobile Payment status is: %s\n", p.payment ? "Paid" : "Unpaid");
     }
 
     return p; // Return modified struct back
@@ -245,7 +271,9 @@ int main() {
                 if (adoption == 1) {
                     printf("\nAdmin Action Executed Successfully!\n");
                     users_list(users);
-                } else if (adoption == 0) {
+                } else if (adoption == 2){
+                    payment_list(users);
+                }else if (adoption == 0) {
                     printf("Exiting admin dashboard...\n");
                     admintime = 0;
                 } else {
@@ -267,9 +295,9 @@ int main() {
                     // Pass saved values from 'm' to calculation
                     p1 = meter_usageCalculation(m, p1); 
                 }else if(option == 3){
-                    p1 = make_payment(p1);
+                    p1 = make_payment(p1, users);
                     users[userIndex].amount = p1.amount; // Save to the global array
-                } 
+                }
                 else if (option == 0) {
                     printf("Exiting application...\n");
                     running = 0; // Exit dashboard loop
