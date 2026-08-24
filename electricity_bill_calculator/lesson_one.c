@@ -85,17 +85,17 @@ void users_list(struct Person users[]){
     }
 }
 
-struct Person meter_usageCalculation(struct Meter m, struct Person p) {
+struct Person meter_usageCalculation(struct Meter m, struct Person users[], const int index) {
     printf("\n--- METER USAGE CALCULATION ---\n");
     float ratePerUnit = 5.50f;
-    p.total_usage = m.units_consumed * ratePerUnit;
+    users[index].total_usage = m.units_consumed * ratePerUnit;
 
     printf("Previous Reading : %.2f\n", m.preReading);
     printf("Current Reading  : %.2f\n", m.currentReading);
     printf("Units Consumed   : %.2f kW\n", m.units_consumed);
-    printf("Total Cost       : $%.2f\n", p.total_usage);
+    printf("Total Cost       : $%.2f\n", users[index].total_usage);
 
-    return p;
+    return users[index];
 }
 
 // Return float instead of int
@@ -162,36 +162,50 @@ float mobile_payment() {
     return amount; // Return the entered amount
 }
 
-struct Person make_payment(struct Person p, struct Person users[]) {
+struct Person make_payment(struct Person p, struct Person users[], const int index) {
+    // Sync local struct p with array state
+    p.total_usage = users[index].total_usage;
     printf("Your meter usage cost is: $%.2f\n", p.total_usage);
 
     int method = 0; 
-    p.amount = 0.0f;
-    p.payment = false;
 
     printf("Enter payment methods: \n");
     printf("1. Cash\n");
     printf("2. Mobile Pay\n");
-
+    printf("3. Own Payment List\n");
+    printf("Choice: ");
     scanf("%d", &method);
 
     if (method == 1) {
-        p.amount = cash_payment();
-        printf("Payment of $%.2f accepted!\n", p.amount);
-        if(p.amount != EOF){
-            p.payment = true;
+        float paid = cash_payment();
+        if (paid > 0.0f) {
+            users[index].amount += paid; // Accumulate payment
+            if (users[index].amount >= users[index].total_usage && users[index].total_usage > 0.0f) {
+                users[index].payment = true;
+            }
+            printf("Payment of $%.2f accepted!\n", paid);
         }
-        printf("Your Cash Payment status is: %s\n", p.payment ? "Paid" : "Unpaid");
+        printf("Your Cash Payment status is: %s\n", users[index].payment ? "Paid" : "Unpaid");
+
     } else if (method == 2) {
-        p.amount = mobile_payment();
-        printf("Your Mobile Payment of $%.2f accepted!\n", p.amount);
-        if(p.amount == EOF){
-            p.payment = true;
+        float paid = mobile_payment();
+        if (paid > 0.0f) {
+            users[index].amount += paid; // Accumulate payment
+            if (users[index].amount >= users[index].total_usage && users[index].total_usage > 0.0f) {
+                users[index].payment = true;
+            }
+            printf("Your Mobile Payment of $%.2f accepted!\n", paid);
         }
-        printf("Your Mobile Payment status is: %s\n", p.payment ? "Paid" : "Unpaid");
+        printf("Your Mobile Payment status is: %s\n", users[index].payment ? "Paid" : "Unpaid");
+
+    } else if (method == 3) {
+        // FIXED: Changed %d to $%.2f so float values format properly
+        printf("User amount: $%.2f | User Payment status: %s\n", 
+               users[index].amount, 
+               users[index].payment ? "Paid" : "Unpaid");
     }
 
-    return p; // Return modified struct back
+    return users[index]; // Return updated array element back to main
 }
 
 struct Meter user_meter(struct Person users[], const int userIndex, struct Meter meters[]) {
@@ -293,9 +307,9 @@ int main() {
                     m = user_meter(users, userIndex, meters); 
                 } else if (option == 2) {
                     // Pass saved values from 'm' to calculation
-                    p1 = meter_usageCalculation(m, p1); 
+                    p1 = meter_usageCalculation(m, users, userIndex); 
                 }else if(option == 3){
-                    p1 = make_payment(p1, users);
+                    p1 = make_payment(p1, users, userIndex);
                     users[userIndex].amount = p1.amount; // Save to the global array
                 }
                 else if (option == 0) {
