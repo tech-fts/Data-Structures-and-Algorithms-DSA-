@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 
 #define GRID_SIZE           15
@@ -65,12 +66,56 @@ void  mapping_algorithms(void){
         sonar_reading[i] = simulate_sonar_range(sensor_headings[i]);
         printf("%.2f\n",sonar_reading[i]);
     }
+
+    for(int x = 0; x < GRID_SIZE; x++){
+        for(int y=x; y < GRID_SIZE; y++){
+            if(x == robot_x &&  y == robot_y) continue;
+
+            float dx = (float)(x - robot_x);
+            float dy = (float)(y - robot_y);
+
+            float cell_dist = sqrtf(dx*dx + dy*dy);
+            float cell_ang = atan2f(dy, dx);
+
+            if(cell_ang < 0) cell_ang += 2.0f * PI;
+
+            for(int i = 0; i < NUM_SENSORS; i++){
+                float diff = fabs(cell_ang - sensor_headings[i]);
+                if(diff > PI) diff= (2.0f * PI) - diff;
+
+                if (diff <= CONE_HALF_ANGLE){
+
+                    if(cell_dist < (sonar_reading[i] - 0.4f)){
+                        robot_internal_map[y][x] = CELL_FREE;
+                    }
+
+                    else if(fabs(cell_dist - sonar_reading[i]) <= 0.5f){
+                        robot_internal_map[y][x] = CELL_WALL;
+                    }
+                }
+            }
+        }
+    }
 }
 
+void print_robot_map(void) {
+    printf("\n=== ACOUSTOSIM 2D - ROBOT MEMORY MAP ===\n\n");
+    for(int y = GRID_SIZE - 1; y >= 0; y--) {
+        for(int x = 0; x < GRID_SIZE; x++) {
+            if(x == robot_x && y == robot_y) printf("R ");
+            else if(robot_internal_map[y][x] == CELL_WALL) printf("█ ");
+            else if(robot_internal_map[y][x] == CELL_FREE) printf(". ");
+            else printf("? ");
+        }
+        printf("\n");
+    }
+    printf("\nLegend: R=Robot, █=Wall, .=Free Space, ?=Unexplored\n");
+}
 
 int main(){
     printf("This is start of the project...\n");
     setup_environment();
     mapping_algorithms();
+    print_robot_map();
     return 0;
 }
