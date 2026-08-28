@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
 #include <time.h>
 
@@ -18,6 +19,20 @@ void getCustomTimestamp(char *buffer, size_t max_size) {
     strftime(buffer, max_size, "%Y-%m-%d %H:%M:%S", timeinfo);
 }
 
+float get_temp(){
+    return 20.0f + ((float)rand() /(float)RAND_MAX) * 15.0f;
+}
+
+float get_pressure(){
+    return 98.0f + ((float)rand()/(float)RAND_MAX) * 7.0f;
+}
+
+uint8_t get_status(float temp, float pressure) {
+    if (temp > 32.0f) return 1;       // High Temp Warning
+    if (pressure > 103.5f) return 2;   // High Pressure Warning
+    return 0;                          // System OK
+}
+
 int main() {
     FILE *fptr;
     printf("Start of the project.\n");
@@ -34,9 +49,9 @@ int main() {
     getCustomTimestamp(s1.timestamp, sizeof(s1.timestamp));
 
     // 2. Assign remaining struct values
-    s1.temp = 25.4f;
-    s1.pressure = 1013.25f;
-    s1.status_code = 0;
+    s1.temp = get_temp();
+    s1.pressure = get_pressure();
+    s1.status_code = get_status(s1.temp);
 
     // 3. Write formatted string (%s for timestamp)
     fprintf(fptr, "%s,%.2f,%.2f,%u\n", 
