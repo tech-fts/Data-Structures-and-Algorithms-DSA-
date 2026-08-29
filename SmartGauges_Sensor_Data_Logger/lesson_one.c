@@ -6,17 +6,17 @@
 struct Sensor {
     char timestamp[25];  // Increased slightly for safety  
     float temp;           
-    float pressure;       
-    uint8_t status_code;
+    float pressure;  //like 12.0 
+    uint8_t status_code; //unsigned integer practise for software enginner
 };
 
 void getCustomTimestamp(char *buffer, size_t max_size) {
-    time_t rawtime;
-    struct tm *timeinfo;
+    time_t rawtime; //to get time info decflare rawtien
+    struct tm *timeinfo; //and declare time info
 
-    time(&rawtime);
-    timeinfo = localtime(&rawtime);
-    strftime(buffer, max_size, "%Y-%m-%d %H:%M:%S", timeinfo);
+    time(&rawtime); //using rawtime call time function 
+    timeinfo = localtime(&rawtime); //and call localtime function and insert  "&"rawtime
+    strftime(buffer, max_size, "%Y-%m-%d %H:%M:%S", timeinfo); //call strftime four parameter buffer, max size , format and timeinfo
 }
 
 float get_temp(){
