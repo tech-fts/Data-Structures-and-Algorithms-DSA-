@@ -27,7 +27,7 @@ void array_adding(int numbers[], const int x){
 int main(){
     int count;
     int x = 0; //assigned value first
-    int *numbers = NULL;
+    int *numbers = NULL; //initial declare for memory allocate
 
     while(1){
         int user_opt;
@@ -45,9 +45,9 @@ int main(){
         }
 
         if (user_opt == 1){
-            count = user_input();
+            count = user_input(); // user can add number of array element 
 
-            numbers = (int *)malloc(count * sizeof(int));
+            numbers = (int *)malloc(count * sizeof(int)); // user can enter any number that can accept and change memory size
             if (numbers == NULL) {
                 printf("Memory allocation failed!\n");
                 return 1;
@@ -88,7 +88,7 @@ int main(){
                 }
             }
 
-            if (found_index != -1) {
+            if (found_index != -1) { //if not equal -1 delete element found from array
                 // Shift elements left to overwrite the target index
                 for (int i = found_index; i < count - 1; i++) {
                     numbers[i] = numbers[i + 1];
