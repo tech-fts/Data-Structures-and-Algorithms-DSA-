@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #define mock_size 10
 
+int check_index = 0;
+
 typedef struct
 {
     int id;
@@ -9,7 +11,7 @@ typedef struct
     double price;
     double discount_rate;
     int quantity;
-}Item;
+} Item;
 
 Item mock_items[mock_size] = {
     {101, "Wireless Noise-Canceling Headphones", 199.99, 0.15, 1},
@@ -27,46 +29,93 @@ Item mock_items[mock_size] = {
 int init_memory(Item **checkout_array, int initial_capacity){
     *checkout_array = (Item *)malloc(initial_capacity * sizeof(Item));
 
-    if(checkout_array == NULL){
+    // DEREFERENCE FIX: Check allocated heap pointer, not double pointer
+    if(*checkout_array == NULL){
         return 0;
     }
     return 1;
 }
 
-char add_item_checkout(Item mock_items[], const int item_num, Item checkout_array[]){
-    int check_index = 0;
+// TYPE FIX: Return double so cents are preserved in calculations
+double calculate_total_price(double price, double dis_rate, int qty){
+    return (price * (1.0 - dis_rate)) * qty;
+}
 
+// POINTER FIX: Pass grand_total and total_qty as pointers to update by reference
+void add_item_checkout(Item mock_items[], const int item_num, Item checkout_array[], double *grand_total, int *total_qty){
+
+    // FORMAT FIX: Use %.2f for double unit price
     printf("item name is: %s\n", mock_items[item_num].name);
     printf("item quantity is: %d\n", mock_items[item_num].quantity);
-    printf("item price is: %d\n", mock_items[item_num].price);
+    printf("item price is: $%.2f\n", mock_items[item_num].price);
 
+    double unit_price = mock_items[item_num].price;
+    double dis_rate = mock_items[item_num].discount_rate;
+    int qty = mock_items[item_num].quantity;
+
+    // RANGE FIX: Allow item_num 0 to be valid
+    if(item_num >= 0 && item_num < mock_size){
+        
+        // Copy item to heap array
+        checkout_array[check_index] = mock_items[item_num];
+        check_index++;
+
+        double total = 0.0;
+
+        if(dis_rate > 0.0){
+            printf("dis rate appear: %.2f%%\n", dis_rate * 100);
+            total = calculate_total_price(unit_price, dis_rate, qty);
+        } else {
+            printf("dis rate appear: No Discount\n");
+            total = unit_price * qty;
+        }
+
+        // ACCUMULATE FIX: Update values via pointers before printing
+        *total_qty += qty;
+        *grand_total += total;
+
+        printf("total qty in cart: %d\n", *total_qty);
+        printf("grand total price: $%.2f\n", *grand_total);
+    }
 }
 
 int main(){
     int item_num;
     Item *checkout_array = NULL;
-    printf("continue to do checkout");
+    double grand_total = 0.0; 
+    int total_qty = 0;
+
+    printf("continue to do checkout\n");
     for(int i = 0; i < mock_size; i++){
         printf("%d. items name is: %s \n", i, mock_items[i].name);
     }
 
     while(1){
-        printf("Enter item number to buy: ");
+        printf("\nEnter item number to buy (-1 to exit): ");
 
-        while (scanf("%d", &item_num) != 1 || item_num < 0)
+        while (scanf("%d", &item_num) != 1 || item_num < -1 || item_num >= mock_size)
         {
-            printf("Invalid Input. Please enter again...");
+            printf("Invalid Input. Please enter again: ");
             while(getchar() != '\n');
         }
 
-        printf("itemnumbers:%d \n", item_num);
+        if(item_num == -1) break;
 
-        if(!init_memory(&checkout_array, item_num)){
+        printf("itemnumbers: %d\n", item_num);
+
+        if(!init_memory(&checkout_array, mock_size)){
             printf("Failed to allocate cart memory.\n");
             return 1;
-        };
+        }
 
-        add_item_checkout(mock_items,item_num, checkout_array);
+        // REFERENCE FIX: Pass memory addresses (&) of accumulators
+        add_item_checkout(mock_items, item_num, checkout_array, &grand_total, &total_qty);
     }
+
+    if(checkout_array != NULL){
+        free(checkout_array);
+        checkout_array = NULL;
+    }
+
     return 0;
 }
