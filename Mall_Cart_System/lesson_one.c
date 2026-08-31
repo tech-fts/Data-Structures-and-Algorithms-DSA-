@@ -81,7 +81,7 @@ void add_item_checkout(Item mock_items[], const int item_num, Item checkout_arra
 
 int main(){
     int item_num;
-    Item *checkout_array = NULL;
+    Item *checkout_array = NULL; //need to add item 
     double grand_total = 0.0; 
     int total_qty = 0;
 
