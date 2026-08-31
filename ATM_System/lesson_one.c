@@ -30,8 +30,36 @@ int get_password() {
     return 0; // Wrong PIN
 }
 
+int main_atm_menu(){
+    int main_option;
+    printf("1. Check account balance: \n");
+    printf("2. Withdraw balance: \n");
+
+    while (scanf("%d", &main_option) != 1 && main_option < 0)
+    {
+        printf("Invalid Input. Please enter again: ");
+        while(getchar() != '\n');
+    }
+
+    return main_option;
+}
+
+float withdraw_balance(float main_account){
+    return 0;
+}
+
+float balance_function(int opt, float main_account){
+    if(opt == 1){
+        printf("Your balance is : %.f", main_account);
+    }else if(opt == 2){
+        withdraw_balance(main_account);
+        printf("successfully withdraw!");
+    }
+}
+
 int main(){
     int card;
+    float main_account = 1200000;
     project_display();
 
     //check card
@@ -45,5 +73,9 @@ int main(){
     if(check_pin == 0){
         printf("Your card pin are wrong");
     }
+
+    //main function for atm
+    int opt = main_atm_menu();
+    balance_function(opt, main_account);
     return 0;
 }
