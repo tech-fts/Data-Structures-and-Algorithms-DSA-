@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #define person_size 100
 
 typedef struct {
@@ -9,6 +10,13 @@ typedef struct {
     char address[200];
     char phoneNumber[100];
 } Person;
+
+typedef enum {
+    type_int,
+    type_float,
+    type_char,
+    type_double
+} DataType;
 
 void get_userdata(Person database[],int size, Person pe){
     if(size > person_size){
@@ -47,14 +55,39 @@ void show_database(Person database[], int size){
     }
 }
 
+bool all_types(void *names, DataType type){
+    if( names == NULL){return false;}
+
+    int result = 0;
+    switch(type){
+        case type_int:
+            result = printf("%d", *(int *)names);
+            break;
+        case type_float:
+            result = printf("%f", *(float *)names);
+            break;
+        case type_char:
+            result = printf("%c", *(char *)names);
+            break;
+        case type_double:
+            result = printf("%lf", *(double *)names);
+            break;
+        default:
+            return false;
+    }
+
+    return true;
+}
+
 int main(){
-    printf("Welcome to our database system\n");
     Person pe;
     int people = 0;
     int user_input = 0;
-
+    
+    printf("Welcome to our database system\n");
     printf("please enter number that you want to add in database: ");
-    scanf("%d", &user_input);
+    all_types(&user_input, type_int);
+    // scanf("%d", &user_input);
     Person *database = (Person *)malloc(sizeof(Person) * user_input); // Allocate memory for 100 Person records changed to user input
     if(database == NULL) { //check null for memory allocation failure
         fprintf(stderr, "Memory allocation failed\n");
