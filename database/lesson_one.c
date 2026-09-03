@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#define person_size 100
+#include <string.h>
+
+#define MAX_PERSONS 100
 
 typedef struct {
     int id;
@@ -11,99 +13,113 @@ typedef struct {
     char phoneNumber[100];
 } Person;
 
-typedef enum {
-    type_int,
-    type_float,
-    type_char,
-    type_double
-} DataType;
-
-void get_userdata(Person database[],int size, Person pe){
-    if(size > person_size){
-        printf("Error: Number of people exceeds the maximum limit.\n");
-        return;
-    }
-    for(int i=0; i< size; i++){
-        printf("Enter details for person %d:\n", i + 1);
-        pe.id = i + 1; // Assign a unique ID to each person
-        printf("Name: ");
-        scanf("%s", pe.name);
-        printf("Email: ");
-        scanf("%s", pe.email);
-        printf("Address: ");
-        scanf("%s", pe.address);
-        printf("Phone Number: ");
-        scanf("%s", pe.phoneNumber);
-
-        printf("user name is: %s\n", pe.name);
-
-        database[i] = pe; // Store the person in the database array
-
-    }
-}
-
-void show_database(Person database[], int size){
-    printf("Database Contents:\n");
-    for(int i = 0; i < size; i++){
-        printf("Person %d:\n", i + 1);
-        printf("ID: %d\n", database[i].id);
-        printf("Name: %s\n", database[i].name);
-        printf("Email: %s\n", database[i].email);
-        printf("Address: %s\n", database[i].address);
-        printf("Phone Number: %s\n", database[i].phoneNumber);
-        printf("\n");
-    }
-}
-
-bool all_types(void *names, DataType type){
-    if( names == NULL){return false;}
-
-    int result = 0;
-    switch(type){
-        case type_int:
-            result = printf("%d", *(int *)names);
-            break;
-        case type_float:
-            result = printf("%f", *(float *)names);
-            break;
-        case type_char:
-            result = printf("%c", *(char *)names);
-            break;
-        case type_double:
-            result = printf("%lf", *(double *)names);
-            break;
-        default:
-            return false;
-    }
-
-    return true;
-}
-
-int input_check(DataType type, int user_input){
-    while(scanf("%d", &user_input) != 1){
+int input_check(const char *type, int user_input) {
+    while (scanf(type, &user_input) != 1) {
         printf("Invalid input. Please enter a valid integer: ");
-        while(getchar() != '\n'); // Clear the input buffer
-    };
+        while (getchar() != '\n'); // Clear the input buffer
+    }
+    while (getchar() != '\n'); // Clear trailing newline
     return user_input;
 }
 
-int main(){
-    Person pe;
-    int people = 0;
-    int user_input = 0;
-    
-    printf("Welcome to our database system\n");
-    printf("please enter number that you want to add in database: ");
-    int type_check = all_types(&user_input, type_int);
-    user_input = input_check(type_int, user_input);
-    Person *database = (Person *)malloc(sizeof(Person) * user_input); // Allocate memory for 100 Person records changed to user input
-    if(database == NULL) { //check null for memory allocation failure
-        fprintf(stderr, "Memory allocation failed\n");
-        return 1;
+void get_userdata(Person database[], int count) {
+    for (int i = 0; i < count; i++) {
+        printf("\n--- Enter details for person %d ---\n", i + 1);
+        database[i].id = i + 1;
+
+        printf("Name: ");
+        fgets(database[i].name, sizeof(database[i].name), stdin);
+        database[i].name[strcspn(database[i].name, "\n")] = 0; // Remove newline
+
+        printf("Email: ");
+        fgets(database[i].email, sizeof(database[i].email), stdin);
+        database[i].email[strcspn(database[i].email, "\n")] = 0;
+
+        printf("Address: ");
+        fgets(database[i].address, sizeof(database[i].address), stdin);
+        database[i].address[strcspn(database[i].address, "\n")] = 0;
+
+        printf("Phone Number: ");
+        fgets(database[i].phoneNumber, sizeof(database[i].phoneNumber), stdin);
+        database[i].phoneNumber[strcspn(database[i].phoneNumber, "\n")] = 0;
+    }
+}
+
+void show_database(Person database[], int size) {
+    if (database == NULL || size == 0) {
+        printf("\nNo data to show. Please add people to the database first.\n");
+        return;
     }
 
-    get_userdata(database, user_input, pe);//declare function
-    show_database(database, user_input);
-    free(database); // Don't forget to free the allocated memory
+    printf("\n================ DATABASE CONTENTS ================\n");
+    for (int i = 0; i < size; i++) {
+        printf("Person %d (ID: %d):\n", i + 1, database[i].id);
+        printf("  Name:  %s\n", database[i].name);
+        printf("  Email: %s\n", database[i].email);
+        printf("  Addr:  %s\n", database[i].address);
+        printf("  Phone: %s\n", database[i].phoneNumber);
+        printf("--------------------------------------------------\n");
+    }
+}
+
+int get_userOption() {
+    int user_input = 0;
+    printf("\nPlease choose an option:\n");
+    printf("1. Add new persons to database\n");
+    printf("2. View database contents\n");
+    printf("3. Exit\n");
+    printf("Selection: ");
+    return input_check("%d", user_input);
+}
+
+int main() {
+    Person *database = NULL;
+    int current_count = 0;
+    bool running = true;
+
+    printf("Welcome to our database system\n");
+
+    while (running) {
+        int option = get_userOption();
+
+        if (option == 1) {
+            printf("How many people do you want to add? ");
+            int new_people = 0;
+            new_people = input_check("%d", new_people);
+
+            if (new_people <= 0) {
+                printf("Invalid number of records.\n");
+                continue;
+            }
+
+            // Fix scope bug: allocate into outer 'database' pointer using realloc
+            Person *temp = realloc(database, sizeof(Person) * (current_count + new_people));
+            if (temp == NULL) {
+                fprintf(stderr, "Memory allocation failed!\n");
+                free(database);
+                return 1;
+            }
+            database = temp;
+
+            // Populate data starting at current end index
+            get_userdata(&database[current_count], new_people);
+            current_count += new_people;
+
+        } else if (option == 2) {
+            show_database(database, current_count);
+
+        } else if (option == 3) {
+            printf("Exiting database system...\n");
+            running = false;
+
+        } else {
+            printf("Invalid option. Please try again.\n");
+        }
+    }
+
+    if (database != NULL) {
+        free(database);
+    }
+
     return 0;
 }
