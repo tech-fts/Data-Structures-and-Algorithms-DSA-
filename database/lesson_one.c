@@ -62,12 +62,100 @@ void show_database(Person database[], int size) {
     }
 }
 
+void name_search(Person database[], int size){
+    char search_name[50];
+    printf("Enter name to search: ");
+    scanf("%s", search_name);
+    for (int i = 0; i < size; i++) {
+        if (strcmp(database[i].name, search_name) == 0) {
+            printf("Person found:\n");
+            printf("  Name:  %s\n", database[i].name);
+            printf("  Email: %s\n", database[i].email);
+            printf("  Addr:  %s\n", database[i].address);
+            printf("  Phone: %s\n", database[i].phoneNumber);
+            return;
+        }
+    }
+    printf("Person not found.\n");
+}
+
+void email_search(Person database[], int size){
+    char search_email[50];
+    printf("Enter email to search: ");
+    scanf("%s", search_email);
+    for (int i = 0; i < size; i++) {
+        if (strcmp(database[i].email, search_email) == 0) {
+            printf("Person found:\n");
+            printf("  Name:  %s\n", database[i].name);
+            printf("  Email: %s\n", database[i].email);
+            printf("  Addr:  %s\n", database[i].address);
+            printf("  Phone: %s\n", database[i].phoneNumber);
+            return;
+        }
+    }
+    printf("Person not found.\n");
+}
+
+void address_search(Person database[], int size){
+    char search_address[200];
+    printf("Enter address to search: ");
+    scanf("%s", search_address);
+    for (int i = 0; i < size; i++) {
+        if (strcmp(database[i].address, search_address) == 0) {
+            printf("Person found:\n");
+            printf("  Name:  %s\n", database[i].name);
+            printf("  Email: %s\n", database[i].email);
+            printf("  Addr:  %s\n", database[i].address);
+            printf("  Phone: %s\n", database[i].phoneNumber);
+            return;
+        }
+    }
+    printf("Person not found.\n");
+}
+
+void phone_search(Person database[], int size){
+    char search_phone[20];
+    printf("Enter phone number to search: ");
+    scanf("%s", search_phone);
+    for (int i = 0; i < size; i++) {
+        if (strcmp(database[i].phoneNumber, search_phone) == 0) {
+            printf("Person found:\n");
+            printf("  Name:  %s\n", database[i].name);
+            printf("  Email: %s\n", database[i].email);
+            printf("  Addr:  %s\n", database[i].address);
+            printf("  Phone: %s\n", database[i].phoneNumber);
+            return;
+        }
+    }
+    printf("Person not found.\n");
+}
+
+void search_person(Person database[], int size, const char *option){
+    if(option == NULL || database == NULL || size <= 0) {
+        printf("Invalid search parameters.\n");
+        return;
+    }
+
+    if (strcmp(option, "name") == 0) {
+        name_search(database, size);
+    } else if (strcmp(option, "email") == 0) {
+        email_search(database, size);
+    } else if (strcmp(option, "address") == 0) {
+        address_search(database, size);
+    } else if (strcmp(option, "phone") == 0) {
+        phone_search(database, size);
+    } else {
+        printf("Invalid search option. Please choose from name/email/address/phone.\n");
+    }
+}
+
 int get_userOption() {
     int user_input = 0;
     printf("\nPlease choose an option:\n");
     printf("1. Add new persons to database\n");
     printf("2. View database contents\n");
-    printf("3. Exit\n");
+    printf("3. Search for a person\n");
+    printf("4. Exit\n");
     printf("Selection: ");
     return input_check("%d", user_input);
 }
@@ -108,7 +196,12 @@ int main() {
         } else if (option == 2) {
             show_database(database, current_count);
 
-        } else if (option == 3) {
+        } else if(option == 3){
+            char search_option[50];
+            printf("Enter search option (name/email/address/phone): ");
+            scanf("%s", search_option);
+            search_person(database, current_count, search_option); // Example search by name
+        }else if (option == 4) {
             printf("Exiting database system...\n");
             running = false;
 
