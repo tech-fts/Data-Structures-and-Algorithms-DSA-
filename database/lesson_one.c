@@ -79,6 +79,14 @@ bool all_types(void *names, DataType type){
     return true;
 }
 
+int input_check(DataType type, int user_input){
+    while(scanf("%d", &user_input) != 1){
+        printf("Invalid input. Please enter a valid integer: ");
+        while(getchar() != '\n'); // Clear the input buffer
+    };
+    return user_input;
+}
+
 int main(){
     Person pe;
     int people = 0;
@@ -86,8 +94,8 @@ int main(){
     
     printf("Welcome to our database system\n");
     printf("please enter number that you want to add in database: ");
-    all_types(&user_input, type_int);
-    // scanf("%d", &user_input);
+    int type_check = all_types(&user_input, type_int);
+    user_input = input_check(type_int, user_input);
     Person *database = (Person *)malloc(sizeof(Person) * user_input); // Allocate memory for 100 Person records changed to user input
     if(database == NULL) { //check null for memory allocation failure
         fprintf(stderr, "Memory allocation failed\n");
