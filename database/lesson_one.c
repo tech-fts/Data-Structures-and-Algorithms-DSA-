@@ -68,7 +68,7 @@ void name_search(Person database[], int size){
     scanf("%s", search_name);
     for (int i = 0; i < size; i++) {
         if (strcmp(database[i].name, search_name) == 0) {
-            printf("Person found:\n");
+            printf("Person found search by name '%s':\n", search_name);
             printf("  Name:  %s\n", database[i].name);
             printf("  Email: %s\n", database[i].email);
             printf("  Addr:  %s\n", database[i].address);
@@ -85,7 +85,7 @@ void email_search(Person database[], int size){
     scanf("%s", search_email);
     for (int i = 0; i < size; i++) {
         if (strcmp(database[i].email, search_email) == 0) {
-            printf("Person found:\n");
+            printf("Person found search by email '%s':\n", search_email);
             printf("  Name:  %s\n", database[i].name);
             printf("  Email: %s\n", database[i].email);
             printf("  Addr:  %s\n", database[i].address);
@@ -102,7 +102,7 @@ void address_search(Person database[], int size){
     scanf("%s", search_address);
     for (int i = 0; i < size; i++) {
         if (strcmp(database[i].address, search_address) == 0) {
-            printf("Person found:\n");
+            printf("Person found search by address '%s':\n", search_address);
             printf("  Name:  %s\n", database[i].name);
             printf("  Email: %s\n", database[i].email);
             printf("  Addr:  %s\n", database[i].address);
@@ -119,7 +119,7 @@ void phone_search(Person database[], int size){
     scanf("%s", search_phone);
     for (int i = 0; i < size; i++) {
         if (strcmp(database[i].phoneNumber, search_phone) == 0) {
-            printf("Person found:\n");
+            printf("Person found search by phone '%s':\n", search_phone);
             printf("  Name:  %s\n", database[i].name);
             printf("  Email: %s\n", database[i].email);
             printf("  Addr:  %s\n", database[i].address);
@@ -137,13 +137,13 @@ void search_person(Person database[], int size, const char *option){
     }
 
     if (strcmp(option, "name") == 0) {
-        name_search(database, size);
+        name_search(database, size); //you can search by name
     } else if (strcmp(option, "email") == 0) {
-        email_search(database, size);
+        email_search(database, size);//you can search by email
     } else if (strcmp(option, "address") == 0) {
-        address_search(database, size);
+        address_search(database, size);//you can search by address
     } else if (strcmp(option, "phone") == 0) {
-        phone_search(database, size);
+        phone_search(database, size);//you can search by phone
     } else {
         printf("Invalid search option. Please choose from name/email/address/phone.\n");
     }
