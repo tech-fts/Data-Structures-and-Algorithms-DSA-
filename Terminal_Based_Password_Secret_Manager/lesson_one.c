@@ -27,52 +27,56 @@ void project_display(){
     printf("Enter your option: ");
 }
 
-Account* check_vault(Account *vault, int *vault_size){
+Account* check_vault(Account *vault, int *vault_size, int *account_count){
     printf("Enter the size of the vault: ");
     scanf("%d", vault_size);
-    vault = (Account*)malloc(*vault_size * sizeof(Account));
+    vault = (Account*)calloc(*vault_size, sizeof(Account));
+    *account_count = 0;
+
     printf("Vault created with size %d\n", *vault_size);
     return vault;
 }
 
-void add_account(Account *vault, int *vault_size){
-    if(vault == NULL){
-        printf("No vault found. Please create a new vault first.");
-        printf("\n");
+void add_account(Account *vault, int vault_size, int *account_count) {
+    if (vault == NULL) {
+        printf("No vault found. Please create a new vault first.\n");
         return;
     }
-    if(*vault_size <= 0){
-        printf("Vault is full. Cannot add more accounts.");
-        printf("\n");
+
+    if (*account_count >= vault_size) {
+        printf("Vault is full. Cannot add more accounts.\n");
         return;
     }
+
     Account new_account;
+
+    // Prompt user ONCE outside the search loop
     printf("Enter account name: ");
-    scanf("%s", new_account.account);
+    scanf("%49s", new_account.account);
     printf("Enter username: ");
-    scanf("%s", new_account.username);
+    scanf("%49s", new_account.username);
     printf("Enter password: ");
-    scanf("%s", new_account.password);
-    
-    // Add the new account to the vault
-    for(int i = 0; i < *vault_size; i++){
-        if(vault[i].account[0] == '\0'){ // Check for empty slot
+    scanf("%49s", new_account.password);
+
+    // Loop through the array to find an empty slot
+    for (int i = 0; i < vault_size; i++) {
+        if (vault[i].account[0] == '\0') { 
             vault[i] = new_account;
+            (*account_count)++;
             printf("Account added successfully.\n");
             return;
         }
     }
-    printf("Vault is full. Cannot add more accounts.\n");
 }
 
-void view_accounts(Account *vault, int vault_size){
-    if(vault == NULL || vault_size <= 0){
+void view_accounts(Account *vault, int *vault_size){
+    if(vault == NULL || *vault_size <= 0){
         printf("No accounts to display. Please create a new vault first.");
         printf("\n");
         return;
     }
     printf("Accounts in the vault:\n");
-    for(int i = 0; i < vault_size; i++){
+    for(int i = 0; i < *vault_size; i++){
         if(vault[i].account[0] != '\0'){ // Check for non-empty slot
             printf("Account: %s, Username: %s, Password: %s\n", vault[i].account, vault[i].username, vault[i].password);
         }
@@ -81,7 +85,8 @@ void view_accounts(Account *vault, int vault_size){
 
 int main(){
     int option; 
-    int vault_size = 0; 
+    int vault_size = 0;
+    int account_count = 0;
     Account *vault = NULL; //add pointer to vault array
 
     while(1){
@@ -102,7 +107,7 @@ int main(){
                 free(vault);
                 vault = NULL;
             }
-            vault = check_vault(vault, &vault_size);
+            vault = check_vault(vault, &vault_size, &account_count);
         }else if(option == 2){
             // open an existing vault
             printf("Opening an existing vault...");
@@ -121,13 +126,13 @@ int main(){
             // add a account to the vault
             printf("Adding a new account to the vault...");
             printf("\n");
-            add_account(vault, &vault_size);
+            add_account(vault, vault_size, &account_count);
         }else if(option == 6){
             // delete a account from the vault
             printf("Deleting an account from the vault...");
             printf("\n");
             // Implement delete_account function here
-            view_accounts(vault, vault_size);
+            view_accounts(vault, &vault_size);
         }else{
             printf("Exiting the program...");
             break;
