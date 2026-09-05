@@ -2,8 +2,7 @@
 #include <stdlib.h>
 
 void project_display(){
-    printf("This is vault project!");
-    printf("\n");
+    printf("\n___________This is vault project!___________\n");
     printf("This project is a terminal based password secret manager.");
     printf("\n");
     printf("This project is written in C language.");
@@ -18,15 +17,15 @@ void project_display(){
     printf("\n");
     printf("5. update a account in the vault");
     printf("\n");
-    printf("6. view all accounts in the vault");
-    printf("\n");
+    printf("6. view all accounts in the vault \n");
+    printf("Enter your option: ");
 }
 
-int* check_vault(int *vault, int vault_size){
+int* check_vault(int *vault, int *vault_size){
     printf("Enter the size of the vault: ");
-    scanf("%d", &vault_size);
-    vault = (int*)malloc(vault_size * sizeof(int));
-    printf("Vault created with size %d", vault_size);
+    scanf("%d", vault_size);
+    vault = (int*)malloc(*vault_size * sizeof(int));
+    printf("Vault created with size %d", *vault_size);
     return vault;
 }
 
@@ -48,7 +47,11 @@ int main(){
             // create a new vault
             printf("Creating a new vault...");
             printf("\n");
-            vault = check_vault(vault, vault_size);
+            if(vault != NULL){
+                free(vault);
+                vault = NULL;
+            }
+            vault = check_vault(vault, &vault_size);
         }else if(option == 2){
             // open an existing vault
             printf("Opening an existing vault...");
@@ -56,12 +59,12 @@ int main(){
             if(vault == NULL){
                 printf("No vault found. Please create a new vault first.");
                 printf("\n");
+            } else {
+                printf("Vault opened successfully.");
+                printf("\n");
+                printf("Vault size: %d", vault_size); //no need to display the vault size here, but it can be useful for debugging and no need to add * for pointer
+                printf("\n");
             }
-
-            printf("Vault opened successfully.");
-            printf("\n");
-            printf("Vault size: %d", vault_size);
-            printf("\n");
 
         }
     }
