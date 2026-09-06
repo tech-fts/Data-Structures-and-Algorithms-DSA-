@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct{
     char account[50];
@@ -37,25 +38,47 @@ Account* check_vault(Account *vault, int *vault_size, int *account_count){
     return vault;
 }
 
-// void encrypt_decrypt(Account *account, int count){
-//     printf("Encrypting/Decrypting password for account: %s %d\n", account->account, count);
-//     char new_account[50];
-//     char new_username[50];
-//     char new_password[50];
-//     // Implementation for encryption/decryption
-//     for(int i = 0; i< count; i++){//need to know how to loop for aoount structure
-//         // account->password[i] ^= 0xFF; // Simple XOR encryption for demonstration
-//         printf("Encrypting/Decrypting password for account: %s\n", account->account);
-//         printf("Original Username: %s\n", account->username);
-//         printf("Original password: %s\n", account->password);
-//         new_account = *account->account[i] ^ 0xFF; // Simple XOR encryption for demonstration
-//         new_username = *account->username[i] ^ 0xFF;
-//         new_password = *account->password[i] ^ 0xFF;
-//         printf("Encrypted/Decrypted Username: %s\n", new_username);
-//         printf("Encrypted/Decrypted password: %s\n", new_password);
+void save_to_database(char *account, char *username, char *password){
+    // Placeholder for saving to database
+    printf("Saving to database: Account: %s, Username: %s, Password: %s\n", account, username, password);
+    FILE *vault_file = fopen("vault.txt", "a");
+    if (vault_file == NULL) {
+        printf("Error opening vault file for writing.\n");
+        return; 
+    }
+    fprintf(vault_file, "Account: %s, Username: %s, Password: %s\n", account, username, password);
+    fclose(vault_file);
+}
 
-//     }
-// }
+char encrypt_decrypt_string(char *str, char *key){
+    // Simple XOR encryption/decryption for demonstration
+    // while(*str){
+    //     *str ^= *key; // XOR with key
+    //     str++;
+    // } //one way 
+
+    int key_length = strlen(str);
+    for (int i=0; i < key_length; i++) {
+        str[i] ^= key[i % strlen(key)]; // XOR with key
+    } //two ways
+    return *str;
+}
+
+void encrypt_decrypt(Account *account, int count){
+    printf("Encrypting/Decrypting password for account: %s %d\n", account->account, count);
+    char new_account[50];
+    char new_username[50];
+    char new_password[50];
+    // Implementation for encryption/decryption
+    for(int i = 0; i< count; i++){//need to know how to loop for aoount structure
+        new_account[i] = encrypt_decrypt_string(account->account, "K");
+        new_username[i] = encrypt_decrypt_string(account->username, "K");
+        new_password[i] = encrypt_decrypt_string(account->password, "K");
+
+        save_to_database(new_account, new_username, new_password);
+        printf("Encrypted/Decrypted Account: %s, Username: %s, Password: %s\n", new_account, new_username, new_password);
+    }
+}
 
 void add_account(Account *vault, int vault_size, int *account_count) {
     if (vault == NULL) {
@@ -82,7 +105,7 @@ void add_account(Account *vault, int vault_size, int *account_count) {
     for (int i = 0; i < vault_size; i++) {
         if (vault[i].account[0] == '\0') { 
             vault[i] = new_account;
-            // encrypt_decrypt(&new_account, i == 0 ? 1 : i); // Call the encrypt_decrypt function here add new funtion 
+            encrypt_decrypt(&new_account, i == 0 ? 1 : i); // Call the encrypt_decrypt function here add new funtion 
             (*account_count)++;
             printf("Account added successfully.\n");
             return;
