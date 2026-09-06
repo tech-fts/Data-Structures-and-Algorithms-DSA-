@@ -37,6 +37,26 @@ Account* check_vault(Account *vault, int *vault_size, int *account_count){
     return vault;
 }
 
+// void encrypt_decrypt(Account *account, int count){
+//     printf("Encrypting/Decrypting password for account: %s %d\n", account->account, count);
+//     char new_account[50];
+//     char new_username[50];
+//     char new_password[50];
+//     // Implementation for encryption/decryption
+//     for(int i = 0; i< count; i++){//need to know how to loop for aoount structure
+//         // account->password[i] ^= 0xFF; // Simple XOR encryption for demonstration
+//         printf("Encrypting/Decrypting password for account: %s\n", account->account);
+//         printf("Original Username: %s\n", account->username);
+//         printf("Original password: %s\n", account->password);
+//         new_account = *account->account[i] ^ 0xFF; // Simple XOR encryption for demonstration
+//         new_username = *account->username[i] ^ 0xFF;
+//         new_password = *account->password[i] ^ 0xFF;
+//         printf("Encrypted/Decrypted Username: %s\n", new_username);
+//         printf("Encrypted/Decrypted password: %s\n", new_password);
+
+//     }
+// }
+
 void add_account(Account *vault, int vault_size, int *account_count) {
     if (vault == NULL) {
         printf("No vault found. Please create a new vault first.\n");
@@ -62,6 +82,7 @@ void add_account(Account *vault, int vault_size, int *account_count) {
     for (int i = 0; i < vault_size; i++) {
         if (vault[i].account[0] == '\0') { 
             vault[i] = new_account;
+            // encrypt_decrypt(&new_account, i == 0 ? 1 : i); // Call the encrypt_decrypt function here add new funtion 
             (*account_count)++;
             printf("Account added successfully.\n");
             return;
