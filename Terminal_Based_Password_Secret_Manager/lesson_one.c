@@ -172,11 +172,19 @@ int main(){
             printf("\n");
             add_account(vault, vault_size, &account_count);
         }else if(option == 6){
-            // delete a account from the vault
-            printf("Deleting an account from the vault...");
+            // view accounts in the vault
+            printf("Viewing accounts in the vault...");
             printf("\n");
-            // Implement delete_account function here
-            view_accounts(vault, &vault_size);
+            FILE *vault_file = fopen("vault.txt", "r");
+            if(vault_file != NULL) {
+                printf("Vault contents:\n");
+                // view_accounts(vault, &vault_size);
+                fclose(vault_file);
+            } else {
+                printf("No vault file found. Please create a new vault first.");
+                printf("\n");
+                continue;
+            }
         }else{
             printf("Exiting the program...");
             break;
