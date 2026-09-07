@@ -42,7 +42,7 @@ int start_game(){
 }
 
 int main(){
-    int userAge;
+    unsigned int userAge;
 
     printf("Welcome to out lottery system!");
 
