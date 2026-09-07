@@ -113,18 +113,23 @@ void add_account(Account *vault, int vault_size, int *account_count) {
     }
 }
 
-void view_accounts(Account *vault, int *vault_size){
-    if(vault == NULL || *vault_size <= 0){
+void view_accounts(FILE *vault_file, int *vault_size) {
+    if(vault_file == NULL || *vault_size <= 0){
         printf("No accounts to display. Please create a new vault first.");
         printf("\n");
         return;
     }
     printf("Accounts in the vault:\n");
-    for(int i = 0; i < *vault_size; i++){
-        if(vault[i].account[0] != '\0'){ // Check for non-empty slot
-            printf("Account: %s, Username: %s, Password: %s\n", vault[i].account, vault[i].username, vault[i].password);
-        }
+    // for(int i = 0; i < *vault_size; i++){
+    //     if(vault[i].account[0] != '\0'){ // Check for non-empty slot
+    //         printf("Account: %s, Username: %s, Password: %s\n", vault[i].account, vault[i].username, vault[i].password);
+    //     }
+    // }
+    char line[200];
+    while(fgets(line, sizeof(line), vault_file) != NULL){
+        printf("%s", line);
     }
+    fclose(vault_file);
 }
 
 int main(){
@@ -178,8 +183,8 @@ int main(){
             FILE *vault_file = fopen("vault.txt", "r");
             if(vault_file != NULL) {
                 printf("Vault contents:\n");
-                // view_accounts(vault, &vault_size);
-                fclose(vault_file);
+                view_accounts(vault_file, &vault_size);
+                // fclose(vault_file);
             } else {
                 printf("No vault file found. Please create a new vault first.");
                 printf("\n");
