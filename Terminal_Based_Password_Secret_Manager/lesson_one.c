@@ -2,35 +2,60 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct{
+typedef struct {
     char account[50];
     char username[50];
     char password[50];
 } Account;
 
-void project_display(){
+void project_display() {
     printf("\n___________This is vault project!___________\n");
-    printf("This project is a terminal based password secret manager.");
-    printf("\n");
-    printf("This project is written in C language.");
-    printf("\n");
-    printf("1. create a new vault");
-    printf("\n");
-    printf("2. open an existing vault");
-    printf("\n");
-    printf("3. add a account to the vault");
-    printf("\n");
-    printf("4. delete a account from the vault");
-    printf("\n");
-    printf("5. update a account in the vault");
-    printf("\n");
-    printf("6. view all accounts in the vault \n");
+    printf("This project is a terminal based password secret manager.\n");
+    printf("This project is written in C language.\n");
+    printf("1. create a new vault\n");
+    printf("2. open an existing vault\n");
+    printf("3. add an account to the vault\n");
+    printf("4. delete an account from the vault\n");
+    printf("5. update an account in the vault\n");
+    printf("6. view all accounts in the vault\n");
     printf("Enter your option: ");
 }
 
-Account* check_vault(Account *vault, int *vault_size, int *account_count){
+// Fixed: XOR encryption operating on fixed-size byte buffers instead of strlen()
+void encrypt_decrypt_bytes(char *data, size_t size, const char *key) {
+    size_t key_len = strlen(key);
+    for (size_t i = 0; i < size; i++) {
+        data[i] ^= key[i % key_len];
+    }
+}
+
+// Fixed: Writes binary structures directly using fwrite
+void save_to_database(const Account *account) {
+    FILE *vault_file = fopen("vault.bin", "ab"); // Append binary mode
+    if (vault_file == NULL) {
+        printf("Error opening vault file for writing.\n");
+        return;
+    }
+
+    Account encrypted_acc = *account;
+
+    // Encrypt each fixed buffer
+    encrypt_decrypt_bytes(encrypted_acc.account, sizeof(encrypted_acc.account), "K");
+    encrypt_decrypt_bytes(encrypted_acc.username, sizeof(encrypted_acc.username), "K");
+    encrypt_decrypt_bytes(encrypted_acc.password, sizeof(encrypted_acc.password), "K");
+
+    fwrite(&encrypted_acc, sizeof(Account), 1, vault_file);
+    fclose(vault_file);
+}
+
+Account* check_vault(Account *vault, int *vault_size, int *account_count) {
     printf("Enter the size of the vault: ");
-    scanf("%d", vault_size);
+    if (scanf("%d", vault_size) != 1 || *vault_size <= 0) {
+        printf("Invalid vault size.\n");
+        while (getchar() != '\n'); // Clear input buffer
+        return NULL;
+    }
+
     vault = (Account*)calloc(*vault_size, sizeof(Account));
     *account_count = 0;
 
@@ -38,46 +63,10 @@ Account* check_vault(Account *vault, int *vault_size, int *account_count){
     return vault;
 }
 
-void save_to_database(char *account, char *username, char *password){
-    // Placeholder for saving to database
-    printf("Saving to database: Account: %s, Username: %s, Password: %s\n", account, username, password);
-    FILE *vault_file = fopen("vault.txt", "a");
-    if (vault_file == NULL) {
-        printf("Error opening vault file for writing.\n");
-        return; 
-    }
-    fprintf(vault_file, "Account: %s, Username: %s, Password: %s\n", account, username, password);
-    fclose(vault_file);
-}
-
-char encrypt_decrypt_string(char *str, char *key){
-    // Simple XOR encryption/decryption for demonstration
-    // while(*str){
-    //     *str ^= *key; // XOR with key
-    //     str++;
-    // } //one way 
-
-    int key_length = strlen(str);
-    for (int i=0; i < key_length; i++) {
-        str[i] ^= key[i % strlen(key)]; // XOR with key
-    } //two ways
-    return *str;
-}
-
-void encrypt_decrypt(Account *account, int count){
-    printf("Encrypting/Decrypting password for account: %s %d\n", account->account, count);
-    char new_account[50];
-    char new_username[50];
-    char new_password[50];
-    // Implementation for encryption/decryption
-    for(int i = 0; i< count; i++){//need to know how to loop for aoount structure
-        new_account[i] = encrypt_decrypt_string(account->account, "K");
-        new_username[i] = encrypt_decrypt_string(account->username, "K");
-        new_password[i] = encrypt_decrypt_string(account->password, "K");
-
-        save_to_database(new_account, new_username, new_password);
-        printf("Encrypted/Decrypted Account: %s, Username: %s, Password: %s\n", new_account, new_username, new_password);
-    }
+void encrypt_decrypt(Account *account, int slot) {
+    printf("Encrypting and saving password for account: %s (slot: %d)\n", account->account, slot);
+    save_to_database(account);
+    printf("Encrypted and saved successfully.\n");
 }
 
 void add_account(Account *vault, int vault_size, int *account_count) {
@@ -93,7 +82,6 @@ void add_account(Account *vault, int vault_size, int *account_count) {
 
     Account new_account;
 
-    // Prompt user ONCE outside the search loop
     printf("Enter account name: ");
     scanf("%49s", new_account.account);
     printf("Enter username: ");
@@ -101,11 +89,10 @@ void add_account(Account *vault, int vault_size, int *account_count) {
     printf("Enter password: ");
     scanf("%49s", new_account.password);
 
-    // Loop through the array to find an empty slot
     for (int i = 0; i < vault_size; i++) {
-        if (vault[i].account[0] == '\0') { 
+        if (vault[i].account[0] == '\0') {
             vault[i] = new_account;
-            encrypt_decrypt(&new_account, i == 0 ? 1 : i); // Call the encrypt_decrypt function here add new funtion 
+            encrypt_decrypt(&new_account, i);
             (*account_count)++;
             printf("Account added successfully.\n");
             return;
@@ -113,85 +100,74 @@ void add_account(Account *vault, int vault_size, int *account_count) {
     }
 }
 
-void view_accounts(FILE *vault_file, int *vault_size) {
-    if(vault_file == NULL || *vault_size <= 0){
-        printf("No accounts to display. Please create a new vault first.");
-        printf("\n");
+// Fixed: Reads binary structures using fread and decrypts them line-by-line
+void view_accounts() {
+    FILE *vault_file = fopen("vault.bin", "rb"); // Read binary mode
+    if (vault_file == NULL) {
+        printf("No vault file found on disk. Add an account first.\n");
         return;
     }
-    printf("Accounts in the vault:\n");
-    // for(int i = 0; i < *vault_size; i++){
-    //     if(vault[i].account[0] != '\0'){ // Check for non-empty slot
-    //         printf("Account: %s, Username: %s, Password: %s\n", vault[i].account, vault[i].username, vault[i].password);
-    //     }
-    // }
-    char line[200];
-    while(fgets(line, sizeof(line), vault_file) != NULL){
-        printf("%s", line);
+
+    Account acc;
+    int count = 0;
+    printf("\n--- Vault Contents ---\n");
+
+    while (fread(&acc, sizeof(Account), 1, vault_file) == 1) {
+        // Decrypt in-place
+        encrypt_decrypt_bytes(acc.account, sizeof(acc.account), "K");
+        encrypt_decrypt_bytes(acc.username, sizeof(acc.username), "K");
+        encrypt_decrypt_bytes(acc.password, sizeof(acc.password), "K");
+
+        printf("[%d] Account: %s | Username: %s | Password: %s\n", 
+               ++count, acc.account, acc.username, acc.password);
     }
+
+    if (count == 0) {
+        printf("Vault file is empty.\n");
+    }
+
     fclose(vault_file);
 }
 
-int main(){
-    int option; 
+int main() {
+    int option;
     int vault_size = 0;
     int account_count = 0;
-    Account *vault = NULL; //add pointer to vault array
+    Account *vault = NULL;
 
-    while(1){
+    while (1) {
         project_display();
-        if(scanf("%d", &option) != 1){
-            printf("Invalid input. Please enter a number between 1 and 6.");
-            printf("\n");
-            // clear the input buffer
-            while(getchar() != '\n');
+        if (scanf("%d", &option) != 1) {
+            printf("Invalid input. Please enter a number between 1 and 6.\n");
+            while (getchar() != '\n'); // Clear input buffer
             continue;
         }
 
-        if(option == 1){
-            // create a new vault
-            printf("Creating a new vault...");
-            printf("\n");
-            if(vault != NULL){
+        if (option == 1) {
+            printf("Creating a new vault...\n");
+            if (vault != NULL) {
                 free(vault);
                 vault = NULL;
             }
             vault = check_vault(vault, &vault_size, &account_count);
-        }else if(option == 2){
-            // open an existing vault
-            printf("Opening an existing vault...");
-            printf("\n");
-            if(vault == NULL){
-                printf("No vault found. Please create a new vault first.");
-                printf("\n");
+        } else if (option == 2) {
+            printf("Opening an existing vault...\n");
+            if (vault == NULL) {
+                printf("No vault found in memory. Please create a new vault first.\n");
             } else {
-                printf("Vault opened successfully.");
-                printf("\n");
-                printf("Vault size: %d", vault_size); //no need to display the vault size here, but it can be useful for debugging and no need to add * for pointer
-                printf("\n");
+                printf("Vault opened successfully. Size: %d\n", vault_size);
             }
-
-        }else if(option == 3){
-            // add a account to the vault
-            printf("Adding a new account to the vault...");
-            printf("\n");
+        } else if (option == 3) {
+            printf("Adding a new account to the vault...\n");
             add_account(vault, vault_size, &account_count);
-        }else if(option == 6){
-            // view accounts in the vault
-            printf("Viewing accounts in the vault...");
-            printf("\n");
-            FILE *vault_file = fopen("vault.txt", "r");
-            if(vault_file != NULL) {
-                printf("Vault contents:\n");
-                view_accounts(vault_file, &vault_size);
-                // fclose(vault_file);
-            } else {
-                printf("No vault file found. Please create a new vault first.");
-                printf("\n");
-                continue;
+        } else if (option == 6) {
+            printf("Viewing accounts in the vault...\n");
+            view_accounts();
+        } else {
+            printf("Exiting the program...\n");
+            if (vault != NULL) {
+                free(vault);
             }
-        }else{
-            printf("Exiting the program...");
             break;
         }
     }
