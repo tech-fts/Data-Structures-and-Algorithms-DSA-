@@ -51,7 +51,7 @@ int main() {
     // 2. Assign remaining struct values
     s1.temp = get_temp();
     s1.pressure = get_pressure();
-    s1.status_code = get_status(s1.temp);
+    s1.status_code = get_status(s1.temp, s1.pressure);
 
     // 3. Write formatted string (%s for timestamp)
     fprintf(fptr, "%s,%.2f,%.2f,%u\n", 

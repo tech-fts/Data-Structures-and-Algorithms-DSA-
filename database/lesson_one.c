@@ -6,7 +6,7 @@
 #define MAX_PERSONS 100
 
 typedef struct {
-    int id;
+    unsigned int id;
     char name[50];
     char email[50];
     char address[200];

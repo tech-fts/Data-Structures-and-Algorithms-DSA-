@@ -7,7 +7,7 @@ struct personInfo
     char phone_number[50];
     char email[50];
     char address[100];
-    int contactId;
+    unsigned int contactId;
 };
 
 int choose_option() {
