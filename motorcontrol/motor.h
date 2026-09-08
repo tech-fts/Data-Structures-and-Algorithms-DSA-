@@ -1,6 +1,7 @@
 #ifndef MOTOR_H
 #define MOTOR_H
 
+#include <stdbool.h>
 #define max_motor_command 10
 
 typedef enum{ //this is state for motor run 
@@ -19,7 +20,7 @@ typedef struct{ //this is motor data
 } StapperMotor;
 
 typedef struct{ //this is command for motor run
-    char command[20];
+    char command;
     int payload;
 } MotorCommand;
 
@@ -37,5 +38,8 @@ void run_motor(StapperMotor *motor);//run motor with command
 
 //motor queue function
 void init_motor_queue(MotorQueue *queue); //init motor queue
+bool is_motor_queue_empty(MotorQueue *queue); //check motor queue is empty
+bool is_motor_queue_full(MotorQueue *queue); //check motor queue is full
+bool push_command(MotorQueue *queue, MotorCommand *cmd); 
 
 #endif // MOTOR_H
