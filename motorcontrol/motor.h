@@ -32,7 +32,7 @@ typedef struct{ //this is queue for motor command
 
 //core motor function
 void init_motor(StapperMotor *motor, int motor_id); //start motor with motor id
-void set_command(StapperMotor * motor, char *command, int payload); //set command for motor run
+void set_command(StapperMotor *motor, char *command, int payload); //set command for motor run
 void run_motor(StapperMotor *motor);//run motor with command
 
 //motor queue function
