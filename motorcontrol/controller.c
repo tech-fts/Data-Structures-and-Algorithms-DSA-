@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "motorcontrol/motor.h"
+#include "motor.h"
 
 void init_motor(StapperMotor *motor, int motor_id) {
     motor->motor_id = motor_id;
@@ -11,16 +11,16 @@ void init_motor(StapperMotor *motor, int motor_id) {
     init_motor_queue(&(motor->command_queue));
 }
 
-void set_command(StapperMotor *motor, char command_type, int payload){
-    if(motor->state == MOTOR_IDLE && command_type != 'R'){
+void set_command(StapperMotor *motor, const char *command_type, int payload){
+    if(motor->state == MOTOR_IDLE && *command_type != 'R'){
         printf("Motor is idle and command queue is empty.\n");
-        return 0;
+        return;
     }
 
-    switch (command_type){ //why error solved in parameter pointer assigned?
+    switch (*command_type){ //why error solved in parameter pointer assigned?
         case 'M': { // Fixed: Added braces {} to create a block scope for cmd
             MotorCommand cmd;
-            cmd.command = command_type; //why still error?
+            cmd.command = *command_type; //why still error?
             cmd.payload = payload;
 
             // Push to FIFO buffer

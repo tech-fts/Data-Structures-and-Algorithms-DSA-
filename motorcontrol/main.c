@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "motorcontrol/motor.h"
-#include "motorcontrol/controller.c"
+#include "motor.h"
+// #include "controller.c"
 
 int main(){
 
@@ -9,7 +9,7 @@ int main(){
 
     if(is_motor_queue_empty(&(motor.command_queue)) && motor.state == MOTOR_IDLE){
         printf("Motor is idle and command queue is empty.\n");
-        set_command(&motor, "MOVE", 100);
+        set_command(&motor, "M", 100);
     }
     return 0;
 }

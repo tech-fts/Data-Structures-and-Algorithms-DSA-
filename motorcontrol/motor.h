@@ -10,15 +10,6 @@ typedef enum{ //this is state for motor run
     MOTOR_ESTOP,
 } MotorState;
 
-typedef struct{ //this is motor data
-    int motor_id;
-    int current_position;
-    int target_position;
-    int speed;
-    MotorState state; // this is declare for motor state
-    MotorQueue command_queue; // this is declare for motor command queue
-} StapperMotor;
-
 typedef struct{ //this is command for motor run
     char command;
     int payload;
@@ -31,9 +22,18 @@ typedef struct{ //this is queue for motor command
     int size;
 } MotorQueue;
 
+typedef struct{ //this is motor data
+    int motor_id;
+    int current_position;
+    int target_position;
+    int speed;
+    MotorState state; // this is declare for motor state
+    MotorQueue command_queue; // this is declare for motor command queue
+} StapperMotor;
+
 //core motor function
 void init_motor(StapperMotor *motor, int motor_id); //start motor with motor id
-void set_command(StapperMotor *motor, char *command, int payload); //set command for motor run
+void set_command(StapperMotor *motor, const char *command, int payload); //set command for motor run
 void run_motor(StapperMotor *motor);//run motor with command
 
 //motor queue function
