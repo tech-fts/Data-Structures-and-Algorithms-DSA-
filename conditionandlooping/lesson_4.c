@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-bool check_userage(int userAge){
+bool check_userage(void){
+    unsigned int userAge;
     printf("Enter your age to check permit age: ");
     scanf("%d", &userAge);
 
@@ -42,11 +43,10 @@ int start_game(){
 }
 
 int main(){
-    unsigned int userAge;
 
     printf("Welcome to out lottery system!");
 
-    if(check_userage(userAge)){
+    if(check_userage()){
         printf("You are auth person to play the game \n");
         start_game();
     }

@@ -54,7 +54,6 @@ int main(){
             }
 
             printf("numbers of user wanted: %d\n ", count);
-            int x = 0;
             while(x < count){ // this condition check user want to add element to array
                 printf("numbers:%d\n", x);
 
