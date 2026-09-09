@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include "motor.h"
-// #include "controller.c"
 
 int main(){
 
