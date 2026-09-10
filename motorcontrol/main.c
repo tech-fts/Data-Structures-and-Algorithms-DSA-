@@ -15,5 +15,11 @@ int main(){
     set_command(&motor, "M", 5);
     set_command(&motor, "M", 2);
 
+    while(!is_motor_queue_empty(&(motor.command_queue)) || motor.state != MOTOR_IDLE ){
+        run_motor(&motor);
+    }
+
+    printf("All commands executed. Final position: %d\n", motor.current_position);
+
     return 0;
 }
