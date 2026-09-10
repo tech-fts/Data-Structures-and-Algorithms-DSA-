@@ -30,7 +30,11 @@ bool push_command(MotorQueue *queue, MotorCommand *cmd){
 }
 
 void set_command(StapperMotor *motor, const char *command_type, int payload){
-    if(motor->state == MOTOR_IDLE && *command_type != 'R'){
+    if(motor == NULL && *command_type == NULL){
+        return;
+    }
+
+    if(motor->state == MOTOR_ESTOP && *command_type != 'R'){
         printf("Motor is idle and command queue is empty.\n");
         return;
     }
@@ -51,14 +55,49 @@ void set_command(StapperMotor *motor, const char *command_type, int payload){
         }
         case 'R':
             motor->target_position = payload;
+            motor->current_position = payload;
             motor->state = MOTOR_IDLE;
             break;
         case 'E':
             motor->state = MOTOR_ESTOP;
+            printf("motor is stopped");
             break;
         default:
             break;
     }
+}
+
+void run_motor(StapperMotor *motor){
+    if(motor->state == MOTOR_ESTOP){
+        return;
+    }
+
+    if(motor->state == MOTOR_IDLE){
+        MotorCommand *mcmd;
+        if(push_command(&motor->command_queue, &mcmd)){     
+            if(mcmd->command == "M"){
+                motor->target_position += mcmd->payload;
+                motor->state = MOTOR_RUNNING;
+                printf("[RUN] motor runninf position is %d", motor->target_position);
+            }
+        }
+    }
+
+    if(motor->state == MOTOR_RUNNING){
+        if(motor->current_position < motor->target_position){
+            motor->current_position++;
+            print("motor is currently at %d", motor->current_position);
+        }else if(motor->current_position > motor->target_position ){
+            motor->current_position--;
+            print("motor is currently at %d", motor->current_position);
+        }
+
+        if(motor->current_position == motor->target_position){
+            printf("Motor is reached target position %d", motor->target_position);
+            motor->state = MOTOR_IDLE;
+        }
+    }
+
 }
 
 bool is_motor_queue_empty(MotorQueue *q){
