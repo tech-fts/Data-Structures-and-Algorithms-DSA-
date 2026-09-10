@@ -40,6 +40,7 @@ void run_motor(StapperMotor *motor);//run motor with command
 void init_motor_queue(MotorQueue *queue); //init motor queue
 bool is_motor_queue_empty(MotorQueue *queue); //check motor queue is empty
 bool is_motor_queue_full(MotorQueue *queue); //check motor queue is full
-bool push_command(MotorQueue *queue, MotorCommand *cmd); 
+bool push_command(MotorQueue *queue, MotorCommand *cmd);
+bool pop_command(MotorQueue *queue, MotorCommand *cmd);
 
 #endif // MOTOR_H
