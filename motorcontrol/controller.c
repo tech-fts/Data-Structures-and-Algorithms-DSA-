@@ -66,6 +66,7 @@ void set_command(StapperMotor *motor, const char *command_type, int payload){
             break;
         case 'S':
             motor->state = MOTOR_ESTOP;
+            init_motor_queue(&(motor->command_queue)); // Clear residual queue on ESTOP
             printf("[ESTOP] Motor emergency stopped.\n");
             break;
         default:
