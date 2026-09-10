@@ -62,7 +62,7 @@ void set_command(StapperMotor *motor, const char *command_type, int payload){
 }
 
 bool is_motor_queue_empty(MotorQueue *q){
-    return (q->size < 0);
+    return (q->size == 0);
 }
 
 bool is_motor_queue_full(MotorQueue *q){

@@ -44,7 +44,7 @@ int create_contact(struct personInfo personlist[], int arrsize){
         printf("\n--- Enter Contact #%d Details ---\n", arrsize + 1);
 
         printf("Enter user name: \n");
-        scanf("%s", p1.name);
+        scanf("%49s", p1.name);
 
         printf("Enter user phone_number: \n");
         scanf("%s", p1.phone_number);
@@ -197,7 +197,7 @@ int main(){
 
     while (1)
     {
-        printf("Contact List\n", choose_option);
+        printf("Contact List\n");
         int option = choose_option();
         if( option == 1){
             arrsize = create_contact(personlist, arrsize);
