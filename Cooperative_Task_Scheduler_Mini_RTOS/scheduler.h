@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define MAX_TASK 10
+
 typedef void (*Taskfunction)(void);
 
 typedef struct{
@@ -15,6 +17,6 @@ typedef struct{
 
 void scheduler_init(void);
 bool scheduler_add_task(Taskfunction taskfunc, uint32_t interval);
-void scheduler_run(void);
+void scheduler_run(uint32_t current_time_ms); //fixed wrong parameter
 
 #endif
