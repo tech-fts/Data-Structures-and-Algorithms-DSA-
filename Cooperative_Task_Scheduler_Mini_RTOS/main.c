@@ -27,6 +27,8 @@ void task_update_screen(void){
 int main(){
     printf("Booting Cooperative OS...\n");
 
+    scheduler_init();
+
     scheduler_add_task(task_blink_led, 500);
     scheduler_add_task(task_read_sensor, 200);
     scheduler_add_task(task_update_screen, 1000);
@@ -38,7 +40,7 @@ int main(){
         scheduler_run(simulated_time);
 
         #ifdef _WIN32
-        Sleep(1)
+        Sleep(1);
         #else
         usleep(1000);
         #endif

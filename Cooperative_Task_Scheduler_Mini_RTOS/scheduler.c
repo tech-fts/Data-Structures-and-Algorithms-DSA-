@@ -19,7 +19,7 @@ bool scheduler_add_task(Taskfunction taskfunc, uint32_t interval){
     task_list[task_count].execute = taskfunc;
     task_list[task_count].interval_ms = interval;
     task_list[task_count].last_run_ms = 0;
-    task_list[task_count].is_active = false;
+    task_list[task_count].is_active = true;
 
     task_count++;
     return true;
