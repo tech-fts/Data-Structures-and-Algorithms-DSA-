@@ -1,27 +1,36 @@
 #include <stdio.h>
 #include "scheduler.h"
 
-static Task_t task_list[MAX_TASK];
-static uint8_t task_count;
+static MinHeap_t task_heap;
 
-void scheduler_init(void){
-    task_count = 0;
-    for(int i=0; i < MAX_TASK; i++){
-        task_list[i].is_active = false;
+static void min_heap_insert(Task_t task){
+    if(task_heap.size >= MAX_TASK) return;
+
+    int x = task_heap.size;
+    task_heap.array[x] = task;
+    task_heap.size++;
+
+    while( x != 0 && is_eariler(task_heap.array[x], task_heap.array[(x-1)/2])){
+        swap(&task_heap.array[x], &task_heap.array[(x-1)/2]);
+        x = (x -1)/2;
     }
 }
 
-bool scheduler_add_task(Taskfunction taskfunc, uint32_t interval){
-    if(task_count >= MAX_TASK){
-        return false;
-    }
+void scheduler_init(void){
+    task_heap.size = 0;
+}
 
-    task_list[task_count].execute = taskfunc;
-    task_list[task_count].interval_ms = interval;
-    task_list[task_count].last_run_ms = 0;
-    task_list[task_count].is_active = true;
+bool scheduler_add_task(Taskfunction taskfunc, uint32_t interval, int priority){ // need to declare usage inside function
+    if(task_heap.size >= MAX_TASK || taskfunc == NULL) return false;
 
-    task_count++;
+    Task_t new_task = {
+        .execute = taskfunc,
+        .interval_ms = interval,
+        .next_run_time = 0,
+        .priority = priority
+    };
+
+    min_heap_insert(new_task);
     return true;
 }
 
