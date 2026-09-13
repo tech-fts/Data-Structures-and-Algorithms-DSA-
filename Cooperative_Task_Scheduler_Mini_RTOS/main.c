@@ -29,9 +29,9 @@ int main(){
 
     scheduler_init();
 
-    scheduler_add_task(task_blink_led, 500);
-    scheduler_add_task(task_read_sensor, 200);
-    scheduler_add_task(task_update_screen, 1000);
+    scheduler_add_task(task_blink_led, 500,1);
+    scheduler_add_task(task_read_sensor, 200,2);
+    scheduler_add_task(task_update_screen, 1000,3);
 
     printf("Scheduler running. Press Ctrl+C to stop.\n\n");
 
