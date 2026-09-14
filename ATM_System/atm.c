@@ -52,7 +52,7 @@ int withdraw(float *main_account) {
         return Invalid_withdraw;
     }
 
-    if (amount > *main_account) {
+    if (amount > *main_account && deposite(amount) == -1) {
         printf("Insufficient balance.\n");
         return Insufficient_amout;
     }
@@ -67,10 +67,10 @@ void balance_function(int opt, float *main_account) {
     if (opt == 1) {
         printf("Your balance is: $%.2f\n", *main_account);
     } else if (opt == 2) {
-        withdraw(main_account);
+        withdraw(&main_account);
     }
 }
 
-int deposite(void) {
-    return 0;
+int deposite(amount) {
+    return Fixed_Deposite < amount ? 0 : Insufficient_amout;
 }

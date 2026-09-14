@@ -2,7 +2,7 @@
 #include "atm.h"
 
 int main(void) {
-    float balance = Fixed_Deposite;
+    float balance = 120000;
 
     if (check_card() != 1) {
         printf("Your card was not inserted.\n");
