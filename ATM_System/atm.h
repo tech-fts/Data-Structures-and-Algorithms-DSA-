@@ -8,7 +8,7 @@
 
 int check_card(void);
 int check_pin(void);
-int deposite(void);
+int deposite(amount);
 int withdraw(float *main_account);
 int main_atm_menu(void);
 void balance_function(int opt, float *main_account);
