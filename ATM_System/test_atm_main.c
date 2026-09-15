@@ -1,9 +1,9 @@
 #include <stdio.h>
+#include "atm.h"
 
-int main(){
-
+int main(void) {
     test_deposite();
     test_withdraw();
-    test_balance();
+    test_balance_function();
     return 0;
 }

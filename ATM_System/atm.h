@@ -6,6 +6,10 @@
 #define Invalid_withdraw -2
 #define Invalid_pin -3
 
+int test_deposite(void);
+int test_withdraw(void);
+int test_balance_function(void);
+
 int check_card(void);
 int check_pin(void);
 int deposite(amount);
