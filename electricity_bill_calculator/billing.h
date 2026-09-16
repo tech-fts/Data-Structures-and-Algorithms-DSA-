@@ -29,6 +29,8 @@ struct Meter {
 
 int login(struct Person users[], const char userName[], const char password[]);
 struct Person meter_usageCalculation(struct Meter m, struct Person users[], const int index);
+struct Meter user_meter(struct Person users[], const int userIndex, struct Meter meters[]);
+struct Person make_payment(struct Person p, struct Person users[], const int index);
 float cash_payment();
 float mobile_payment();
 
