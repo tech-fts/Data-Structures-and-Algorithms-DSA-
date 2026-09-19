@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "buffer.h"
 
 void save_message(Buffernode** head, const char* topic, const char* payload, uint8_t qos){
