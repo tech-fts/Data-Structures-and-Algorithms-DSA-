@@ -17,16 +17,34 @@ void save_message(Buffernode** head, const char* topic, const char* payload, uin
     if(*head == NULL){
         *head = new_node;
     }else{
-        Buffernode* current = new_node;
+        Buffernode* current = *head; //bug not point to new_node
         while(current->next != NULL){
             current = current->next;
         }
 
         current->next = new_node;
     }
+    printf("message %u save for topic%s", new_node->message.message_id, new_node->message.topic);
     
 }
 
 void send_message(Buffernode** head){
+    if(*head == NULL){
+        printf("empty memory nothing to send");
+        return;
+    }
+
+    Buffernode* node_to_send = *head;
+
+    printf("start message send");
+    printf("message id: %u", node_to_send->message.message_id);
+    printf("message topic: %s", node_to_send->message.topic);
+    printf("message_payload: %s", node_to_send->message.payload);
+    printf("message qos: %u", node_to_send->message.qos_level);
+    prinf("message send successful");
+
+    *head = node_to_send->next;
+
+    free(node_to_send);
 
 }
