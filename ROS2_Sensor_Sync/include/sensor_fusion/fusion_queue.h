@@ -28,7 +28,7 @@ typedef struct{
     Datapocket* head;
     Datapocket* tail;
     uint64_t max_history_ns;
-}SensorBuffer;
+}SensorBuffer; // I change the name to get sensor data 
 
 void buffer_init(SensorBuffer* buffer, uint64_t max_history_ns);
 void buffer_add_record(SensorBuffer* buffer, uint64_t timestamp, PositionInfo position, SourceData source);
