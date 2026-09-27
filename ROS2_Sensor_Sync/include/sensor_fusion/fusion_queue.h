@@ -5,7 +5,7 @@
 #include <stdbool.h>
 
 typedef enum{
-    SOURCR_WHEEL,
+    SOURCE_WHEEL,
     SOURCE_GPS
 } SourceData;
 
@@ -21,7 +21,7 @@ typedef struct Datapocket{
     SourceData source;
     PositionInfo poinfo;
     struct Datapocket* next;
-    struct Datapocket* pre;
+    struct Datapocket* prev;
 }Datapocket;
 
 typedef struct{
