@@ -21,12 +21,14 @@ void buffer_add_record(SensorBuffer* buffer, uint64_t timestamp, PositionInfo po
     newNode->next = NULL;
     newNode->prev = NULL;
 
+    //checking buffer is null
     if(buffer == NULL){
         buffer->head = newNode;
         buffer->tail = newNode;
         return;
     }
-    
+
+    //checking timestamp to be sure newnode is newer than buffer->head 
     if(timestamp >= buffer->head->time_stamp){
         newNode->next = buffer->head;
         buffer->head->prev = newNode;
@@ -36,6 +38,7 @@ void buffer_add_record(SensorBuffer* buffer, uint64_t timestamp, PositionInfo po
         return;
     }
 
+    //to be sure newnode is older than buffer tail
     if(timestamp <= buffer->tail->time_stamp){
         newNode->prev = buffer->tail;
         buffer->tail->next = newNode;
@@ -45,12 +48,14 @@ void buffer_add_record(SensorBuffer* buffer, uint64_t timestamp, PositionInfo po
         return;
     }
 
+    //insert data to position
     Datapocket* current = buffer->head;
 
     if(current != NULL  && current->time_stamp > timestamp){
         current = current->next;
     }
 
+    //current is older than newnode 
     newNode->next = current;
     newNode->prev = current->next;
 
