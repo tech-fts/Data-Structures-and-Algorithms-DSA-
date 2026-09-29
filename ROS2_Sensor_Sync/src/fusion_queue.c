@@ -67,3 +67,40 @@ void buffer_add_record(SensorBuffer* buffer, uint64_t timestamp, PositionInfo po
 
     buffer_remove(buffer);
 }
+
+void buffer_remove(SensorBuffer* buffer)
+{
+	if(buffer == NULL && buffer->head == NULL && buffer->tail == NULL)
+	{
+		return;
+	}
+
+	uint64_t newestTime = buffer->head->timestamp;
+
+	while(buffer->tail != NULL)
+	{
+		uint64_t oldestTime = buffer->tail->timestamp;
+
+		if((newestTime - oldestTime) > buffer->max_history_ns)
+		{
+			Datapacket* need_to_remove = buffer->tail;
+
+			buffer->tail = buffer->tail->prev;
+
+			if(buffer->tail != NULL)
+			{
+				buffer->tail->next = NULL
+			}else
+			{
+				buffer->head = NULL;
+			}
+			free(need_to_remove)
+			
+		}else
+		{
+			break;
+		}
+
+	}
+}
+
