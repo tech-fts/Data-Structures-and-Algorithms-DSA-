@@ -104,3 +104,59 @@ void buffer_remove(SensorBuffer* buffer)
 	}
 }
 
+bool buffer_estimate_position(const SensorBuffer* buffer,uint64_t target_time,PositionInfo* out_position)
+{
+	if(buffer == NULL || buffer->head == NULL || out_position == NULL)
+	{
+		return false;
+	}
+
+	Datapacket* current = buffer->head;
+	Datapacket* before = NULL;
+	Datapacket* after = NULL;
+
+	while( current != NULL)
+	{
+		if( current->source == SOURCEWHEEL) //check source
+		{
+			if(current->timestamp <= target_time) // check target time
+			 {
+				 before = current;
+				 break;
+			 }	
+			after = current;
+		}
+		current = current->next;
+	}
+
+	if( before == NULL || after == NULL)
+		return false;
+
+	if( after->time_stamp == before->timestamp)
+		return false;
+	
+	double time_difference = (double)(after->timestamp) - (before->timestamp);
+	double alpha = (double) (target_time - (before->timestamp) /time_difference;
+	
+	out_position->x_position = before->poinfo.x_position + alpha * (after->poinfo.x_position - before->poinfo.x_position);
+	out_position->y_position = before->poinfo.y_position + alpha * (after->poinfo.y_position - before->poinfo.y_position);
+	
+	double heading_diff = after->poinfo.heading - before->poinfo.headig;
+
+	while( heading_diff > M_PI)
+	   	return heading_diff -= 2.0 * M_PI;
+	
+	while( heading_diff < -M_PI)
+		return heading_diff += 2.0 * M_PI;
+	
+	out_position->heading = after->poinfo.heading + alpha * heading_diff;
+
+	while(out_position > M_PI)
+		return out_position -= 2.0 * M_PI;
+	
+	while(out_position < -M_PI)
+		return out_position += 2.0 * M_PI;
+	
+	return true;
+
+}
