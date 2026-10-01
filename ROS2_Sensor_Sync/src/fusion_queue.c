@@ -160,3 +160,42 @@ bool buffer_estimate_position(const SensorBuffer* buffer,uint64_t target_time,Po
 	return true;
 
 }
+
+PositionInfo buffer_add_gps(SensorBuffer* buffer,uint64_t gps_time,PositionInfo gps_position)
+{
+	PositionInfo fused_position = gps_position;
+	PositionInfo estimated_odom;
+
+	if(buffer_estimate_position(buffer, gps_time, &estimated_odom))
+	{
+		double error_x = gps_position.x_position - estimated_odom.x_position;
+		double error_y = gps_position.y_position - esitmated_odom.x_position;
+
+		fused_position.x_position = estimated_odom.x_position + 0.7*error_x;
+		fused_position.y_position = esitmated_odom.y_position + 0.7*error_y;
+
+		fused_position.heading = gps_position.heading;
+	}
+
+	buffer_add_record(buffer,gps_time,gps_position,SOURCE_GPS);
+
+	return fused_position;
+}
+
+void buffer_clear(SensorBuffer* buffer)
+{
+	if(buffer == NULL)
+		return;
+
+	DataPacket* current = buffer->heading;
+
+	while( buffer != NULL)
+	{
+		DataPacket* current = current->next;
+		free(current);
+		current = next;
+	}
+
+	buffer->head = NULL;
+	buffer->tail = NULL;
+}
