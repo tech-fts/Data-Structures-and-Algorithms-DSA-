@@ -31,7 +31,7 @@ typedef struct{
 
 }Fushion_Node;
 
-bool fushion_init(Fushion_Node* node_struct, int argc, char const* const* argc ); //already declare header file in fusion_queue.h
+bool fushion_init(Fushion_Node* node_struct, int argc, char const* const* argv ); //already declare header file in fusion_queue.h
 void fushion_remove(Fushion_Node* node_struct);
 void fushion_shutdown(Fushion_Node* node_struct);
 
